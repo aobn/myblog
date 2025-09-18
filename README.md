@@ -1,69 +1,214 @@
-# React + TypeScript + Vite
+# 现代化博客系统
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+一个基于 React 19 + TypeScript + Tailwind CSS + shadcn/ui 构建的现代化博客系统。
 
-Currently, two official plugins are available:
+## ✨ 特性
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 🎨 现代化设计
+- **响应式布局**: 完美适配桌面端、平板和移动端
+- **暗色/亮色主题**: 支持系统主题自动切换
+- **优雅的UI组件**: 基于 shadcn/ui 组件库
+- **流畅的动画**: 精心设计的过渡效果
 
-## Expanding the ESLint configuration
+### 📝 博客功能
+- **文章展示**: 支持精选文章、普通文章列表
+- **分类管理**: 按技术分类组织文章
+- **标签系统**: 灵活的标签云和标签筛选
+- **搜索功能**: 全文搜索和高级筛选
+- **文章归档**: 按时间归档浏览历史文章
+- **评论系统**: 支持文章评论和回复
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 🛠 技术特性
+- **TypeScript**: 完整的类型安全
+- **状态管理**: 使用 Zustand 进行轻量级状态管理
+- **路由系统**: React Router v7 支持
+- **组件化**: 高度模块化的组件设计
+- **性能优化**: 懒加载和代码分割
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🚀 快速开始
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### 环境要求
+- Node.js 18+
+- pnpm 8+
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 安装依赖
+```bash
+pnpm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 启动开发服务器
+```bash
+pnpm dev
 ```
+
+### 构建项目
+```bash
+pnpm build
+```
+
+### 代码检查
+```bash
+pnpm lint
+```
+
+## 📁 项目结构
+
+```
+src/
+├── components/          # 组件目录
+│   ├── blog/           # 博客相关组件
+│   │   ├── article-card.tsx      # 文章卡片
+│   │   ├── blog-header.tsx       # 博客头部
+│   │   └── blog-sidebar.tsx      # 博客侧边栏
+│   ├── layout/         # 布局组件
+│   └── ui/             # UI基础组件
+├── pages/              # 页面组件
+│   ├── BlogHome.tsx    # 博客首页
+│   ├── ArticleDetail.tsx # 文章详情页
+│   ├── Categories.tsx  # 分类页面
+│   ├── Tags.tsx        # 标签页面
+│   ├── Search.tsx      # 搜索页面
+│   ├── Archive.tsx     # 归档页面
+│   └── About.tsx       # 关于页面
+├── routes/             # 路由配置
+│   └── blog-routes.tsx # 博客路由
+├── store/              # 状态管理
+│   └── blog-store.ts   # 博客状态
+├── types/              # 类型定义
+│   └── blog.ts         # 博客类型
+└── styles/             # 样式文件
+```
+
+## 🎯 页面功能
+
+### 首页 (/)
+- 精选文章展示
+- 最新文章列表
+- 网格/列表视图切换
+- 文章筛选和排序
+
+### 文章详情 (/article/:id)
+- 完整文章内容
+- 作者信息展示
+- 文章操作（点赞、收藏、分享）
+- 评论系统
+- 相关文章推荐
+
+### 分类页面 (/categories)
+- 所有分类展示
+- 分类统计信息
+- 分类文章数量
+
+### 标签页面 (/tags)
+- 标签云展示
+- 列表视图切换
+- 标签统计信息
+
+### 搜索页面 (/search)
+- 全文搜索功能
+- 搜索结果展示
+- 高级筛选选项
+- 热门搜索推荐
+
+### 归档页面 (/archive)
+- 按月份归档
+- 可折叠的月份列表
+- 归档统计信息
+
+### 关于页面 (/about)
+- 个人介绍
+- 技能展示
+- 联系方式
+- 博客介绍
+
+## 🎨 设计系统
+
+### 颜色主题
+- 支持亮色/暗色主题
+- 基于 CSS 变量的主题系统
+- 自动跟随系统主题
+
+### 组件规范
+- 基于 shadcn/ui 组件库
+- 统一的设计语言
+- 可复用的组件设计
+
+### 响应式设计
+- 移动优先的设计理念
+- 断点：sm(640px), md(768px), lg(1024px), xl(1280px)
+- 灵活的网格布局
+
+## 📱 响应式特性
+
+### 桌面端 (1024px+)
+- 三栏布局（主内容 + 侧边栏）
+- 完整的导航菜单
+- 网格视图文章列表
+
+### 平板端 (768px - 1023px)
+- 两栏布局
+- 折叠式侧边栏
+- 适配的组件尺寸
+
+### 移动端 (< 768px)
+- 单栏布局
+- 汉堡菜单
+- 触摸友好的交互
+
+## 🔧 自定义配置
+
+### 主题定制
+在 `src/styles/index.css` 中修改 CSS 变量来定制主题颜色。
+
+### 组件扩展
+所有组件都支持通过 `className` 属性进行样式扩展。
+
+### 数据接口
+在实际项目中，需要将模拟数据替换为真实的 API 接口。
+
+## 📝 开发规范
+
+### 代码风格
+- 使用 TypeScript 进行类型检查
+- 遵循 ESLint 规则
+- 组件使用 PascalCase 命名
+- 文件使用 kebab-case 命名
+
+### 组件开发
+- 单一职责原则
+- Props 类型定义
+- 适当的注释说明
+- 可复用性考虑
+
+### 状态管理
+- 使用 Zustand 管理全局状态
+- 本地状态使用 useState
+- 避免过度使用全局状态
+
+## 🚀 部署
+
+### 构建优化
+```bash
+pnpm build
+```
+
+### 静态部署
+构建后的文件在 `dist` 目录，可以部署到任何静态文件服务器。
+
+### 推荐平台
+- Vercel
+- Netlify
+- GitHub Pages
+- 阿里云 OSS
+
+## 📄 许可证
+
+MIT License
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+---
+
+**技术栈**: React 19 + TypeScript + Vite + Tailwind CSS + shadcn/ui + Zustand + React Router v7

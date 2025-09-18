@@ -1,17 +1,21 @@
+/**
+ * 博客应用主组件
+ * 
+ * @author CodeBuddy
+ * @date 2025-09-18
+ */
+
 import '@/styles/App.css'
 import { Outlet } from 'react-router-dom'
-import { ModeToggle } from '@/components/layout/mode-toggle'
+import { ThemeProvider } from '@/components/theme-provider'
 
 function App() {
   return (
-    <div className="min-h-screen bg-background">
-      <header className="container flex items-center justify-end py-4">
-        <ModeToggle />
-      </header>
-      <main>
+    <ThemeProvider defaultTheme="system" storageKey="blog-ui-theme">
+      <div className="min-h-screen bg-background">
         <Outlet />
-      </main>
-    </div>
+      </div>
+    </ThemeProvider>
   )
 }
 
