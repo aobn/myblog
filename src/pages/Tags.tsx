@@ -11,7 +11,6 @@ import { Tag, Hash } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { BlogHeader } from '@/components/blog/blog-header'
 import type { Tag as TagType } from '@/types/blog'
 import { cn } from '@/lib/utils'
 
@@ -62,8 +61,7 @@ export default function Tags() {
   const sortedTags = [...mockTags].sort((a, b) => b.articleCount - a.articleCount)
 
   return (
-    <div className="min-h-screen bg-background">
-      <BlogHeader siteName="技术博客" />
+    <div className="bg-background">
       
       <main className="container mx-auto px-4 py-8">
         {/* 页面标题 */}

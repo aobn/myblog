@@ -12,7 +12,6 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { BlogHeader } from '@/components/blog/blog-header'
 import { ArticleCard } from '@/components/blog/article-card'
 import { useBlogStore } from '@/store/blog-store'
 import type { Article } from '@/types/blog'
@@ -68,8 +67,7 @@ export default function Search() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <BlogHeader siteName="技术博客" />
+    <div className="bg-background">
       
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-8">

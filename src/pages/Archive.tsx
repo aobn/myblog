@@ -12,7 +12,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { BlogHeader } from '@/components/blog/blog-header'
 import type { Article } from '@/types/blog'
 
 // 归档数据类型
@@ -149,8 +148,7 @@ export default function Archive() {
   const totalMonths = mockArchiveData.length
 
   return (
-    <div className="min-h-screen bg-background">
-      <BlogHeader siteName="技术博客" />
+    <div className="bg-background">
       
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-8">

@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { BlogHeader } from '@/components/blog/blog-header'
 import { BlogSidebar } from '@/components/blog/blog-sidebar'
 import { ArticleCard } from '@/components/blog/article-card'
 import { useBlogStore } from '@/store/blog-store'
@@ -148,9 +147,7 @@ export function BlogHome() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <BlogHeader siteName="技术博客" />
-      
+    <div className="bg-background">
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* 主内容区域 */}

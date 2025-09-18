@@ -124,18 +124,18 @@ export function ArticleCard({ article, variant = 'default', className }: Article
             </div>
             <div className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
-              <span>{article.readingTime || 0} 分钟</span>
+              <span>{article.readTime || 0} 分钟</span>
             </div>
           </div>
           
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1">
               <Eye className="h-3 w-3" />
-              <span>{article.views || 0}</span>
+              <span>{article.viewCount || 0}</span>
             </div>
             <div className="flex items-center gap-1">
               <Heart className="h-3 w-3" />
-              <span>{article.likes || 0}</span>
+              <span>{article.likeCount || 0}</span>
             </div>
           </div>
         </div>

@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
-import { BlogHeader } from '@/components/blog/blog-header'
+
 
 // 技能标签
 const skills = [
@@ -30,8 +30,7 @@ const stats = [
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-background">
-      <BlogHeader siteName="技术博客" />
+    <div className="bg-background">
       
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-12">

@@ -14,7 +14,6 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
-import { BlogHeader } from '@/components/blog/blog-header'
 import { BlogSidebar } from '@/components/blog/blog-sidebar'
 import { ArticleCard } from '@/components/blog/article-card'
 import type { Article, Comment } from '@/types/blog'
@@ -220,8 +219,7 @@ export function ArticleDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <BlogHeader siteName="技术博客" />
+    <div className="bg-background">
       
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">

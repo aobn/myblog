@@ -9,7 +9,6 @@ import { Link } from 'react-router-dom'
 import { Folder, ArrowRight } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { BlogHeader } from '@/components/blog/blog-header'
 import type { Category } from '@/types/blog'
 
 
@@ -83,9 +82,7 @@ const mockCategories: Category[] = [
 
 export default function Categories() {
   return (
-    <div className="min-h-screen bg-background">
-      <BlogHeader siteName="技术博客" />
-      
+    <div className="bg-background">
       <main className="container mx-auto px-4 py-8">
         {/* 页面标题 */}
         <div className="text-center space-y-4 mb-12">

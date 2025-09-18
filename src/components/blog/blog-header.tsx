@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from '@/components/ui/navigation-menu'
 import { useBlogStore } from '@/store/blog-store'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { cn } from '@/lib/utils'
 
 interface BlogHeaderProps {
@@ -123,6 +124,9 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
               )}
             </div>
 
+            {/* 主题切换按钮 */}
+            <ThemeToggle />
+
             {/* 移动端搜索按钮 */}
             <Button
               variant="ghost"
@@ -173,6 +177,14 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
                       </Link>
                     ))}
                   </nav>
+
+                  {/* 移动端主题切换 */}
+                  <div className="pt-4 border-t">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">主题设置</span>
+                      <ThemeToggle />
+                    </div>
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>

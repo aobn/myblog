@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import App from '@/App';
+import { BlogLayout } from '@/components/layout/blog-layout';
 import { BlogHome } from '@/pages/BlogHome';
 import { ArticleDetail } from '@/pages/ArticleDetail';
 
@@ -36,48 +37,54 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        index: true,
-        element: <BlogHome />
-      },
-      {
-        path: 'article/:id',
-        element: <ArticleDetail />
-      },
-      {
-        path: 'articles',
-        element: <BlogHome />
-      },
-      {
-        path: 'categories',
-        element: <CategoriesPage />
-      },
-      {
-        path: 'category/:slug',
-        element: <BlogHome />
-      },
-      {
-        path: 'tags',
-        element: <TagsPage />
-      },
-      {
-        path: 'tag/:slug',
-        element: <BlogHome />
-      },
-      {
-        path: 'search',
-        element: <SearchPage />
-      },
-      {
-        path: 'archive',
-        element: <ArchivePage />
-      },
-      {
-        path: 'archive/:month',
-        element: <ArchivePage />
-      },
-      {
-        path: 'about',
-        element: <AboutPage />
+        path: '/',
+        element: <BlogLayout />,
+        children: [
+          {
+            index: true,
+            element: <BlogHome />
+          },
+          {
+            path: 'article/:id',
+            element: <ArticleDetail />
+          },
+          {
+            path: 'articles',
+            element: <BlogHome />
+          },
+          {
+            path: 'categories',
+            element: <CategoriesPage />
+          },
+          {
+            path: 'category/:slug',
+            element: <BlogHome />
+          },
+          {
+            path: 'tags',
+            element: <TagsPage />
+          },
+          {
+            path: 'tag/:slug',
+            element: <BlogHome />
+          },
+          {
+            path: 'search',
+            element: <SearchPage />
+          },
+          {
+            path: 'archive',
+            element: <ArchivePage />
+          },
+          {
+            path: 'archive/:month',
+            element: <ArchivePage />
+          },
+          {
+            path: 'about',
+            element: <AboutPage />
+          }
+        ]
       },
       {
         path: '*',
