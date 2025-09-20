@@ -30,11 +30,11 @@ const categoryDescriptions: Record<string, string> = {
   '设计模式': '软件设计模式在前端开发中的应用和实践'
 }
 
-// 处理分类数据 - 基于 category 和 tags
+// 处理分类数据 - 只基于 category 字段
 const processCategoriesData = (articles: Article[]): Category[] => {
   const categoryMap = new Map<string, { color: string; count: number }>()
   
-  // 统计 category 字段
+  // 只统计 category 字段
   articles
     .filter(article => article.isPublished && article.category)
     .forEach(article => {
@@ -46,25 +46,6 @@ const processCategoriesData = (articles: Article[]): Category[] => {
         })
       }
       categoryMap.get(categoryName)!.count++
-    })
-  
-  // 统计 tags 字段作为分类
-  articles
-    .filter(article => article.isPublished && article.tags)
-    .forEach(article => {
-      const tags = Array.isArray(article.tags) ? article.tags : []
-      tags.forEach(tag => {
-        const tagName = tag.name
-        if (tagName) {
-          if (!categoryMap.has(tagName)) {
-            categoryMap.set(tagName, {
-              color: tag.color || '#6b7280',
-              count: 0
-            })
-          }
-          categoryMap.get(tagName)!.count++
-        }
-      })
     })
   
   return Array.from(categoryMap.entries()).map(([name, data]) => ({

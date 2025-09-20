@@ -11,30 +11,41 @@ import { Tag, Hash } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import type { Tag as TagType } from '@/types/blog'
+import type { Tag as TagType, Article } from '@/types/blog'
 import { cn } from '@/lib/utils'
+import { loadAllPosts } from '@/lib/simple-post-loader'
 
-// 模拟标签数据
-const mockTags: TagType[] = [
-  { id: '1', name: 'JavaScript', slug: 'javascript', articleCount: 45 },
-  { id: '2', name: 'React', slug: 'react', articleCount: 32 },
-  { id: '3', name: 'TypeScript', slug: 'typescript', articleCount: 28 },
-  { id: '4', name: 'CSS', slug: 'css', articleCount: 25 },
-  { id: '5', name: 'Vue.js', slug: 'vuejs', articleCount: 18 },
-  { id: '6', name: 'Node.js', slug: 'nodejs', articleCount: 16 },
-  { id: '7', name: 'Webpack', slug: 'webpack', articleCount: 12 },
-  { id: '8', name: 'Vite', slug: 'vite', articleCount: 11 },
-  { id: '9', name: '性能优化', slug: 'performance', articleCount: 10 },
-  { id: '10', name: 'Tailwind CSS', slug: 'tailwind', articleCount: 9 },
-  { id: '11', name: '设计模式', slug: 'design-patterns', articleCount: 8 },
-  { id: '12', name: 'Git', slug: 'git', articleCount: 7 },
-  { id: '13', name: 'Docker', slug: 'docker', articleCount: 6 },
-  { id: '14', name: 'GraphQL', slug: 'graphql', articleCount: 5 },
-  { id: '15', name: 'PWA', slug: 'pwa', articleCount: 4 },
-  { id: '16', name: 'WebAssembly', slug: 'webassembly', articleCount: 3 },
-  { id: '17', name: 'Deno', slug: 'deno', articleCount: 2 },
-  { id: '18', name: 'Rust', slug: 'rust', articleCount: 2 },
-]
+// 处理标签数据 - 只基于 tags 字段
+const processTagsData = (articles: Article[]): TagType[] => {
+  const tagMap = new Map<string, { color: string; count: number }>()
+  
+  // 只统计 tags 字段
+  articles
+    .filter(article => article.isPublished && article.tags)
+    .forEach(article => {
+      const tags = Array.isArray(article.tags) ? article.tags : []
+      tags.forEach(tag => {
+        const tagName = tag.name
+        if (tagName) {
+          if (!tagMap.has(tagName)) {
+            tagMap.set(tagName, {
+              color: tag.color || '#6b7280',
+              count: 0
+            })
+          }
+          tagMap.get(tagName)!.count++
+        }
+      })
+    })
+  
+  return Array.from(tagMap.entries()).map(([name, data]) => ({
+    id: `tag-${name.toLowerCase().replace(/\s+/g, '-')}`,
+    name,
+    slug: name.toLowerCase().replace(/\s+/g, '-'),
+    articleCount: data.count,
+    color: data.color
+  })).sort((a, b) => b.articleCount - a.articleCount)
+}
 
 // 根据文章数量获取标签大小
 const getTagSize = (count: number) => {
@@ -56,9 +67,44 @@ const getTagColor = (count: number) => {
 
 export default function Tags() {
   const [viewMode, setViewMode] = React.useState<'cloud' | 'list'>('cloud')
+  const [tags, setTags] = React.useState<TagType[]>([])
+  const [totalArticles, setTotalArticles] = React.useState(0)
+  const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    const loadTags = async () => {
+      try {
+        const articles = await loadAllPosts()
+        const processedTags = processTagsData(articles)
+        setTags(processedTags)
+        // 设置真实的文章总数
+        setTotalArticles(articles.filter(article => article.isPublished).length)
+      } catch (error) {
+        console.error('Error loading tags:', error)
+        setTags([])
+        setTotalArticles(0)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadTags()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="bg-background">
+        <main className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <div className="text-lg text-muted-foreground">加载标签中...</div>
+          </div>
+        </main>
+      </div>
+    )
+  }
 
   // 按文章数量排序
-  const sortedTags = [...mockTags].sort((a, b) => b.articleCount - a.articleCount)
+  const sortedTags = [...tags].sort((a, b) => b.articleCount - a.articleCount)
 
   return (
     <div className="bg-background">
@@ -99,30 +145,28 @@ export default function Tags() {
 
         {/* 标签云视图 */}
         {viewMode === 'cloud' && (
-          <Card className="mb-12">
-            <CardContent className="pt-8">
-              <div className="flex flex-wrap items-center justify-center gap-4 min-h-64">
-                {sortedTags.map((tag) => (
-                  <Link key={tag.id} to={`/tag/${tag.slug}`}>
-                    <Badge
-                      variant="secondary"
-                      className={cn(
-                        "cursor-pointer transition-all duration-300 hover:scale-110 hover:shadow-md px-4 py-2",
-                        getTagSize(tag.articleCount),
-                        getTagColor(tag.articleCount)
-                      )}
-                    >
-                      <Hash className="h-3 w-3 mr-1" />
-                      {tag.name}
-                      <span className="ml-2 text-xs opacity-80">
-                        {tag.articleCount}
-                      </span>
-                    </Badge>
-                  </Link>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="mb-12">
+            <div className="flex flex-wrap items-center justify-center gap-4 min-h-64">
+              {sortedTags.map((tag) => (
+                <Link key={tag.id} to={`/tag/${tag.slug}`}>
+                  <Badge
+                    variant="secondary"
+                    className={cn(
+                      "cursor-pointer transition-all duration-300 hover:scale-110 hover:shadow-md px-4 py-2",
+                      getTagSize(tag.articleCount),
+                      getTagColor(tag.articleCount)
+                    )}
+                  >
+                    <Hash className="h-3 w-3 mr-1" />
+                    {tag.name}
+                    <span className="ml-2 text-xs opacity-80">
+                      {tag.articleCount}
+                    </span>
+                  </Badge>
+                </Link>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* 列表视图 */}
@@ -158,7 +202,7 @@ export default function Tags() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-center text-primary">
-                {mockTags.length}
+                {tags.length}
               </div>
             </CardContent>
           </Card>
@@ -169,7 +213,7 @@ export default function Tags() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-center text-primary">
-                {mockTags.reduce((sum, tag) => sum + tag.articleCount, 0)}
+                {totalArticles}
               </div>
             </CardContent>
           </Card>

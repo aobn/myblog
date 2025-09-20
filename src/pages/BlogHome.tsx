@@ -13,7 +13,6 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { BlogSidebar } from '@/components/blog/blog-sidebar'
 import { ArticleCard } from '@/components/blog/article-card'
-import { useBlogStore } from '@/store/blog-store'
 import { loadAllPosts } from '@/lib/simple-post-loader'
 import type { Article } from '@/types/blog'
 
