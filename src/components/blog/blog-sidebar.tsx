@@ -21,22 +21,63 @@ interface BlogSidebarProps {
   className?: string
 }
 
-// 模拟数据 - 实际项目中应该从API获取
-const mockCategories: Category[] = [
-  { id: '1', name: '前端开发', slug: 'frontend', articleCount: 25, color: '#3b82f6' },
-  { id: '2', name: 'React', slug: 'react', articleCount: 18, color: '#06b6d4' },
-  { id: '3', name: 'TypeScript', slug: 'typescript', articleCount: 12, color: '#8b5cf6' },
-  { id: '4', name: '工具分享', slug: 'tools', articleCount: 8, color: '#10b981' },
-]
+// 处理分类数据
+const processCategoriesData = (articles: Article[]): Category[] => {
+  const categoryMap = new Map<string, { name: string; color: string }>()
+  
+  articles
+    .filter(article => article.isPublished && article.category)
+    .forEach(article => {
+      const category = article.category
+      const categoryName = category.name
+      
+      if (!categoryMap.has(categoryName)) {
+        categoryMap.set(categoryName, {
+          name: categoryName,
+          color: category.color || '#6b7280'
+        })
+      }
+    })
+  
+  return Array.from(categoryMap.entries()).map(([name, data]) => ({
+    id: `category-${name.toLowerCase().replace(/\s+/g, '-')}`,
+    name: data.name,
+    slug: name.toLowerCase().replace(/\s+/g, '-'),
+    articleCount: articles.filter(article => 
+      article.isPublished && article.category?.name === name
+    ).length,
+    color: data.color
+  })).sort((a, b) => b.articleCount - a.articleCount)
+}
 
-const mockTags: TagType[] = [
-  { id: '1', name: 'JavaScript', slug: 'javascript', articleCount: 32 },
-  { id: '2', name: 'CSS', slug: 'css', articleCount: 28 },
-  { id: '3', name: 'Vue.js', slug: 'vuejs', articleCount: 15 },
-  { id: '4', name: 'Node.js', slug: 'nodejs', articleCount: 12 },
-  { id: '5', name: '性能优化', slug: 'performance', articleCount: 9 },
-  { id: '6', name: '设计模式', slug: 'design-patterns', articleCount: 7 },
-]
+// 处理标签数据
+const processTagsData = (articles: Article[]): TagType[] => {
+  const tagMap = new Map<string, { name: string; color: string }>()
+  
+  articles
+    .filter(article => article.isPublished && article.tags)
+    .forEach(article => {
+      const tags = Array.isArray(article.tags) ? article.tags : []
+      tags.forEach(tag => {
+        const tagName = tag.name
+        if (tagName && !tagMap.has(tagName)) {
+          tagMap.set(tagName, {
+            name: tagName,
+            color: tag.color || '#6b7280'
+          })
+        }
+      })
+    })
+  
+  return Array.from(tagMap.entries()).map(([name, data]) => ({
+    id: `tag-${name.toLowerCase().replace(/\s+/g, '-')}`,
+    name: data.name,
+    slug: name.toLowerCase().replace(/\s+/g, '-'),
+    articleCount: articles.filter(article => 
+      article.isPublished && article.tags?.some(tag => tag.name === name)
+    ).length
+  })).sort((a, b) => b.articleCount - a.articleCount).slice(0, 6) // 只取前6个热门标签
+}
 
 // 格式化日期
 const formatDate = (dateString: string) => {
@@ -80,6 +121,8 @@ export function BlogSidebar({ className }: BlogSidebarProps) {
   const { selectedCategory, selectedTag, setSelectedCategory, setSelectedTag } = useBlogStore()
   const [articles, setArticles] = React.useState<Article[]>([])
   const [archiveData, setArchiveData] = React.useState<{ month: string; count: number }[]>([])
+  const [categories, setCategories] = React.useState<Category[]>([])
+  const [tags, setTags] = React.useState<TagType[]>([])
 
   // 加载文章数据
   React.useEffect(() => {
@@ -88,10 +131,14 @@ export function BlogSidebar({ className }: BlogSidebarProps) {
         const posts = await loadAllPosts()
         setArticles(posts)
         setArchiveData(processArchiveData(posts))
+        setCategories(processCategoriesData(posts))
+        setTags(processTagsData(posts))
       } catch (error) {
         console.error('Error loading articles:', error)
         setArticles([])
         setArchiveData([])
+        setCategories([])
+        setTags([])
       }
     }
 
@@ -146,7 +193,7 @@ export function BlogSidebar({ className }: BlogSidebarProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {mockCategories.map((category) => (
+          {categories.map((category) => (
             <Button
               key={category.id}
               variant={selectedCategory === category.id ? "default" : "ghost"}
@@ -186,7 +233,7 @@ export function BlogSidebar({ className }: BlogSidebarProps) {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
-            {mockTags.map((tag) => (
+            {tags.map((tag) => (
               <Button
                 key={tag.id}
                 variant={selectedTag === tag.id ? "default" : "outline"}

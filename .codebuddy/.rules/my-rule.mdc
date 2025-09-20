@@ -5,5 +5,7 @@ alwaysApply: true
 ---
 # my-rule
 
-这是一个博客项目，博客数据来源是'posts'文件夹下的 markdan文档
-
+这是一个基于TypeScript + React Router v7 + shadcn/ui + Tailwind CSS+Zustand的React的静态部署的前端博客项目,
+博客数据来源是'posts'文件夹下的 markdan文档
+## 包管理工具
+使用pnpm作为包管理工具，使用Vite作为构建工具
