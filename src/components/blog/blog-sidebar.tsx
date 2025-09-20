@@ -1,7 +1,7 @@
 /**
  * 博客侧边栏组件
  * 
- * @author CodeBuddy
+ * @author x'x'h
  * @date 2025-09-18
  */
 
@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { useBlogStore } from '@/store/blog-store'
+
 import type { Article, Category, Tag as TagType } from '@/types/blog'
 import { cn } from '@/lib/utils'
 import { loadAllPosts } from '@/lib/simple-post-loader'
@@ -118,7 +118,6 @@ const processArchiveData = (articles: Article[]) => {
 }
 
 export function BlogSidebar({ className }: BlogSidebarProps) {
-  const { selectedCategory, selectedTag, setSelectedCategory, setSelectedTag } = useBlogStore()
   const [articles, setArticles] = React.useState<Article[]>([])
   const [archiveData, setArchiveData] = React.useState<{ month: string; count: number }[]>([])
   const [categories, setCategories] = React.useState<Category[]>([])
@@ -194,25 +193,23 @@ export function BlogSidebar({ className }: BlogSidebarProps) {
         </CardHeader>
         <CardContent className="space-y-3">
           {categories.map((category) => (
-            <Button
-              key={category.id}
-              variant={selectedCategory === category.id ? "default" : "ghost"}
-              className="w-full justify-between h-auto p-3"
-              onClick={() => setSelectedCategory(
-                selectedCategory === category.id ? null : category.id
-              )}
-            >
-              <div className="flex items-center gap-2">
-                <div 
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: category.color }}
-                />
-                <span className="font-medium">{category.name}</span>
-              </div>
-              <Badge variant="secondary" className="text-xs">
-                {category.articleCount}
-              </Badge>
-            </Button>
+            <Link key={category.id} to={`/category/${category.slug}`}>
+              <Button
+                variant="ghost"
+                className="w-full justify-between h-auto p-3 hover:bg-accent hover:text-accent-foreground"
+              >
+                <div className="flex items-center gap-2">
+                  <div 
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: category.color }}
+                  />
+                  <span className="font-medium">{category.name}</span>
+                </div>
+                <Badge variant="secondary" className="text-xs">
+                  {category.articleCount}
+                </Badge>
+              </Button>
+            </Link>
           ))}
           
           <Link to="/categories">
@@ -234,20 +231,18 @@ export function BlogSidebar({ className }: BlogSidebarProps) {
         <CardContent>
           <div className="flex flex-wrap gap-2">
             {tags.map((tag) => (
-              <Button
-                key={tag.id}
-                variant={selectedTag === tag.id ? "default" : "outline"}
-                size="sm"
-                className="h-auto px-3 py-1.5 text-xs"
-                onClick={() => setSelectedTag(
-                  selectedTag === tag.id ? null : tag.id
-                )}
-              >
-                {tag.name}
-                <Badge variant="secondary" className="ml-1.5 text-xs">
-                  {tag.articleCount}
-                </Badge>
-              </Button>
+              <Link key={tag.id} to={`/tag/${tag.slug}`}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-auto px-3 py-1.5 text-xs hover:bg-accent hover:text-accent-foreground"
+                >
+                  {tag.name}
+                  <Badge variant="secondary" className="ml-1.5 text-xs">
+                    {tag.articleCount}
+                  </Badge>
+                </Button>
+              </Link>
             ))}
           </div>
           

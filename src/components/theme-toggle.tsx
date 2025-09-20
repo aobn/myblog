@@ -86,7 +86,7 @@ export function ThemeToggle() {
     }
   }, [])
 
-  const createRippleEffect = (event: React.MouseEvent) => {
+  const createRippleEffect = () => {
     if (!buttonRef.current) return
 
     // 获取按钮位置
@@ -150,11 +150,11 @@ export function ThemeToggle() {
     }, 400)
   }
 
-  const toggleTheme = (event: React.MouseEvent) => {
+  const toggleTheme = () => {
     if (isAnimating) return
 
     setIsAnimating(true)
-    createRippleEffect(event)
+    createRippleEffect()
   }
 
   return (
@@ -162,7 +162,7 @@ export function ThemeToggle() {
       ref={buttonRef}
       variant="ghost" 
       size="sm" 
-      onClick={toggleTheme}
+      onClick={() => toggleTheme()}
       disabled={isAnimating}
       className="relative overflow-hidden"
     >
