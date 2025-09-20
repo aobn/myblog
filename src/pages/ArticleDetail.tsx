@@ -10,11 +10,8 @@ import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, Calendar, Clock, Eye, Heart, Share2, Bookmark, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import rehypeHighlight from 'rehype-highlight'
-import rehypeRaw from 'rehype-raw'
 import 'highlight.js/styles/github-dark.css'
+import MarkdownRenderer from '@/components/blog/markdown-renderer'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
@@ -252,85 +249,11 @@ export function ArticleDetail() {
             </header>
 
             {/* 文章内容 */}
-            <div className="mb-12 prose prose-lg dark:prose-invert max-w-none text-left [&>*]:text-left">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeHighlight, rehypeRaw]}
-                components={{
-                  code: ({ node, className, children, ...props }) => {
-                    const match = /language-(\w+)/.exec(className || '')
-                    return match ? (
-                      <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
-                        <code className={className} {...props}>
-                          {children}
-                        </code>
-                      </pre>
-                    ) : (
-                      <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
-                        {children}
-                      </code>
-                    )
-                  },
-                  pre: ({ children }) => <>{children}</>,
-                  h1: ({ children }) => (
-                    <h1 className="text-3xl font-bold mb-6 mt-8 text-foreground border-b pb-2">
-                      {children}
-                    </h1>
-                  ),
-                  h2: ({ children }) => (
-                    <h2 className="text-2xl font-semibold mb-4 mt-8 text-foreground">
-                      {children}
-                    </h2>
-                  ),
-                  h3: ({ children }) => (
-                    <h3 className="text-xl font-semibold mb-3 mt-6 text-foreground">
-                      {children}
-                    </h3>
-                  ),
-                  p: ({ children }) => (
-                    <p className="mb-4 leading-7 text-muted-foreground">
-                      {children}
-                    </p>
-                  ),
-                  ul: ({ children }) => (
-                    <ul className="mb-4 ml-6 list-disc space-y-2">
-                      {children}
-                    </ul>
-                  ),
-                  ol: ({ children }) => (
-                    <ol className="mb-4 ml-6 list-decimal space-y-2">
-                      {children}
-                    </ol>
-                  ),
-                  li: ({ children }) => (
-                    <li className="text-muted-foreground">
-                      {children}
-                    </li>
-                  ),
-                  blockquote: ({ children }) => (
-                    <blockquote className="border-l-4 border-primary pl-4 italic my-4 text-muted-foreground">
-                      {children}
-                    </blockquote>
-                  ),
-                  strong: ({ children }) => (
-                    <strong className="font-semibold text-foreground">
-                      {children}
-                    </strong>
-                  ),
-                  a: ({ href, children }) => (
-                    <a 
-                      href={href} 
-                      className="text-primary hover:underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {children}
-                    </a>
-                  ),
-                }}
-              >
-                {article.content}
-              </ReactMarkdown>
+            <div className="mb-12">
+              <MarkdownRenderer 
+                content={article.content} 
+                className="text-left [&>*]:text-left"
+              />
             </div>
 
             <Separator className="my-8" />

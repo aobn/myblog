@@ -5,10 +5,12 @@
  * @date 2025-09-20
  */
 
+import * as React from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 import 'highlight.js/styles/github-dark.css'
+import { CodeBlock } from './code-block'
 
 interface MarkdownRendererProps {
   content: string
@@ -49,23 +51,40 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
           // 自定义代码块渲染
           code: (props: any) => {
             const match = /language-(\w+)/.exec(props.className || '')
-            return match ? (
+            // 行内代码
+            if (!match) {
+              return (
+                <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-foreground">
+                  {props.children}
+                </code>
+              )
+            }
+            // 代码块由pre标签处理
+            return (
               <code className={props.className} {...props}>
-                {props.children}
-              </code>
-            ) : (
-              <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-foreground">
                 {props.children}
               </code>
             )
           },
           
-          // 自定义预格式化文本渲染
-          pre: (props: any) => (
-            <pre className="bg-muted p-4 rounded-lg overflow-x-auto mb-4 border">
-              {props.children}
-            </pre>
-          ),
+          // 自定义预格式化文本渲染（代码块）
+          pre: (props: any) => {
+            // 获取代码语言
+            const child = React.Children.toArray(props.children)[0] as React.ReactElement
+            
+            // 安全地访问props
+            const childProps = child?.props as Record<string, any> | undefined
+            const className = childProps?.className as string || ''
+            
+            const match = /language-(\w+)/.exec(className)
+            const language = match ? match[1] : ''
+            
+            return (
+              <CodeBlock language={language}>
+                {props.children}
+              </CodeBlock>
+            )
+          },
           
           // 自定义列表渲染
           ul: (props: any) => (
