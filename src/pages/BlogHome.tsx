@@ -80,26 +80,6 @@ export function BlogHome() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* 主内容区域 */}
           <div className="lg:col-span-3 space-y-8">
-            {/* 欢迎区域 */}
-            <section className="text-center py-12 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg">
-              <h1 className="text-4xl font-bold mb-4">欢迎来到我的博客</h1>
-              <p className="text-xl text-muted-foreground mb-6">
-                分享技术见解，记录成长历程，探索编程世界的无限可能
-              </p>
-              <div className="flex items-center justify-center gap-4">
-                <Link to="/articles">
-                  <Button size="lg">
-                    浏览所有文章
-                  </Button>
-                </Link>
-                <Link to="/about">
-                  <Button variant="outline" size="lg">
-                    了解更多
-                  </Button>
-                </Link>
-              </div>
-            </section>
-
             {/* 精选文章区域 */}
             <section>
               <div className="flex items-center gap-2 mb-6">
