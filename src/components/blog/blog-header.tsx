@@ -73,8 +73,8 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
                     <Link
                       to={item.href}
                       className={cn(
-                        "group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50",
-                        isActiveLink(item.href, item.exact) && "bg-accent text-accent-foreground"
+                        "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 focus:shadow-md focus:-translate-y-0.5 focus:outline-none disabled:pointer-events-none disabled:opacity-50",
+                        isActiveLink(item.href, item.exact) && "font-bold shadow-md -translate-y-0.5"
                       )}
                     >
                       {item.name}
