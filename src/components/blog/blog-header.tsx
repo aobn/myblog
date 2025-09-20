@@ -10,7 +10,6 @@ import { Link, useLocation } from 'react-router-dom'
 import { Search, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from '@/components/ui/navigation-menu'
 import { useBlogStore } from '@/store/blog-store'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -137,76 +136,81 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
               <Search className="h-4 w-4" />
             </Button>
 
-            {/* 移动端菜单 */}
-            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="sm" className="md:hidden">
-                  <Menu className="h-4 w-4" />
-                  <span className="sr-only">打开菜单</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-80">
-                <div className="flex flex-col space-y-4 mt-8">
-                  {/* 移动端搜索 */}
-                  <form onSubmit={handleSearch} className="flex space-x-2">
-                    <Input
-                      type="search"
-                      placeholder="搜索文章..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="flex-1"
-                    />
-                    <Button type="submit" size="sm">
-                      搜索
-                    </Button>
-                  </form>
-
-                  {/* 移动端导航菜单 */}
-                  <nav className="flex flex-col space-y-2">
-                    {navigationItems.map((item) => (
-                      <Link
-                        key={item.href}
-                        to={item.href}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className={cn(
-                          "flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-                          isActiveLink(item.href, item.exact) && "bg-accent text-accent-foreground"
-                        )}
-                      >
-                        {item.name}
-                      </Link>
-                    ))}
-                  </nav>
-
-                  {/* 移动端主题切换 */}
-                  <div className="pt-4 border-t">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">主题设置</span>
-                      <ThemeToggle />
-                    </div>
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
+            {/* 移动端菜单按钮 */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="md:hidden"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              <span className="sr-only">切换菜单</span>
+            </Button>
           </div>
         </div>
 
-        {/* 移动端搜索框 */}
+        {/* 移动端下拉菜单 */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden animate-in slide-in-from-top-2 duration-200 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="container mx-auto px-4 py-4 space-y-4">
+              {/* 移动端搜索 */}
+              <form onSubmit={handleSearch} className="flex space-x-2">
+                <Input
+                  type="search"
+                  placeholder="搜索文章..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="flex-1"
+                />
+                <Button type="submit" size="sm">
+                  搜索
+                </Button>
+              </form>
+
+              {/* 移动端导航菜单 */}
+              <nav className="grid grid-cols-2 gap-2">
+                {navigationItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={cn(
+                      "flex items-center justify-center rounded-md px-3 py-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors",
+                      isActiveLink(item.href, item.exact) && "bg-accent text-accent-foreground"
+                    )}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </nav>
+
+              {/* 移动端主题切换 */}
+              <div className="flex items-center justify-between pt-2 border-t">
+                <span className="text-sm font-medium">主题设置</span>
+                <ThemeToggle />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 移动端搜索框（独立显示） */}
         {isSearchOpen && (
-          <div className="sm:hidden pb-4">
-            <form onSubmit={handleSearch} className="flex space-x-2">
-              <Input
-                type="search"
-                placeholder="搜索文章..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1"
-                autoFocus
-              />
-              <Button type="submit" size="sm">
-                搜索
-              </Button>
-            </form>
+          <div className="sm:hidden animate-in slide-in-from-top-2 duration-200 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pb-4">
+            <div className="container mx-auto px-4 pt-4">
+              <form onSubmit={handleSearch} className="flex space-x-2">
+                <Input
+                  type="search"
+                  placeholder="搜索文章..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="flex-1"
+                  autoFocus
+                />
+                <Button type="submit" size="sm">
+                  搜索
+                </Button>
+              </form>
+            </div>
           </div>
         )}
       </div>
