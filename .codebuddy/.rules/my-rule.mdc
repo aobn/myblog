@@ -1,3 +1,9 @@
+---
+description: 
+globs:
+alwaysApply: true
+---
 # my-rule
 
-这是一个规则文件，用于帮助 AI 理解您的代码库和遵循项目约定。
+这是一个博客项目，博客数据来源是'posts'文件夹下的 markdan文档
+

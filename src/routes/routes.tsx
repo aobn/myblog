@@ -3,6 +3,7 @@ import App from '@/App';
 import { BlogLayout } from '@/components/layout/blog-layout';
 import { BlogHome } from '@/pages/BlogHome';
 import { ArticleDetail } from '@/pages/ArticleDetail';
+import { ArticleList } from '@/pages/ArticleList';
 
 // 懒加载其他页面组件
 import { lazy } from 'react';
@@ -50,7 +51,7 @@ const router = createBrowserRouter([
           },
           {
             path: 'articles',
-            element: <BlogHome />
+            element: <ArticleList />
           },
           {
             path: 'categories',

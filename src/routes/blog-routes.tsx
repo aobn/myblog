@@ -9,6 +9,7 @@ import * as React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { BlogHome } from '@/pages/BlogHome'
 import { ArticleDetail } from '@/pages/ArticleDetail'
+import { ArticleList } from '@/pages/ArticleList'
 import { TestPost } from '@/pages/TestPost'
 
 // 懒加载其他页面组件
@@ -39,7 +40,7 @@ export function BlogRoutes() {
         <Route path="/test-post" element={<TestPost />} />
         
         {/* 文章列表 */}
-        <Route path="/articles" element={<BlogHome />} />
+        <Route path="/articles" element={<ArticleList />} />
         
         {/* 分类页面 */}
         <Route path="/categories" element={<CategoriesPage />} />
