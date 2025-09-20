@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { UserIpInfo } from './UserIpInfo'
 
 import type { Article, Category, Tag as TagType } from '@/types/blog'
 import { cn } from '@/lib/utils'
@@ -146,6 +147,9 @@ export function BlogSidebar({ className }: BlogSidebarProps) {
 
   return (
     <aside className={cn("space-y-6", className)}>
+      {/* 用户IP信息 */}
+      <UserIpInfo />
+      
       {/* 最新文章 */}
       <Card>
         <CardHeader>
