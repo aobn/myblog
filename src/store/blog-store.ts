@@ -29,6 +29,7 @@ interface BlogState {
   // 分页状态
   currentPage: number
   totalPages: number
+  pageSize: number
   
   // 筛选状态
   selectedCategory: string | null
@@ -56,6 +57,7 @@ interface BlogActions {
   // 分页操作
   setCurrentPage: (page: number) => void
   setTotalPages: (pages: number) => void
+  setPageSize: (size: number) => void
   
   // 筛选操作
   setSelectedCategory: (categoryId: string | null) => void
@@ -79,6 +81,7 @@ export const useBlogStore = create<BlogState & BlogActions>((set) => ({
   error: null,
   currentPage: 1,
   totalPages: 1,
+  pageSize: 20,
   selectedCategory: null,
   selectedTag: null,
 
@@ -98,6 +101,7 @@ export const useBlogStore = create<BlogState & BlogActions>((set) => ({
   
   setCurrentPage: (page) => set({ currentPage: page }),
   setTotalPages: (pages) => set({ totalPages: pages }),
+  setPageSize: (size) => set({ pageSize: size, currentPage: 1 }),
   
   setSelectedCategory: (categoryId) => set({ selectedCategory: categoryId }),
   setSelectedTag: (tagId) => set({ selectedTag: tagId }),

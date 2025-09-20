@@ -6,7 +6,7 @@
  */
 
 import * as React from 'react'
-import { ChevronLeft, ChevronRight, Grid, List, Filter } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Grid, List, Filter, MoreHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -21,9 +21,12 @@ export function ArticleList() {
   const { 
     currentPage, 
     totalPages, 
+    pageSize,
     selectedCategory, 
     selectedTag,
     setCurrentPage,
+    setTotalPages,
+    setPageSize,
     resetFilters 
   } = useBlogStore()
 
@@ -64,6 +67,24 @@ export function ArticleList() {
         return sorted
     }
   }, [articles, sortBy])
+  
+  // 计算分页数据
+  const paginatedArticles = React.useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize
+    const endIndex = startIndex + pageSize
+    return sortedArticles.slice(startIndex, endIndex)
+  }, [sortedArticles, currentPage, pageSize])
+  
+  // 更新总页数
+  React.useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(sortedArticles.length / pageSize))
+    setTotalPages(totalPages)
+    
+    // 如果当前页超出了总页数，则重置为第一页
+    if (currentPage > totalPages) {
+      setCurrentPage(1)
+    }
+  }, [sortedArticles.length, pageSize, setTotalPages, currentPage, setCurrentPage])
 
   if (loading) {
     return (
@@ -84,6 +105,11 @@ export function ArticleList() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+  
+  // 处理每页显示数量变更
+  const handlePageSizeChange = (value: string) => {
+    setPageSize(Number(value))
   }
 
   // 清除筛选条件
@@ -150,6 +176,18 @@ export function ArticleList() {
                       <SelectItem value="trending">热门趋势</SelectItem>
                     </SelectContent>
                   </Select>
+                  
+                  {/* 每页显示数量 */}
+                  <Select value={pageSize.toString()} onValueChange={handlePageSizeChange}>
+                    <SelectTrigger className="w-28">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="20">每页 20 篇</SelectItem>
+                      <SelectItem value="50">每页 50 篇</SelectItem>
+                      <SelectItem value="100">每页 100 篇</SelectItem>
+                    </SelectContent>
+                  </Select>
 
                   {/* 视图模式切换 */}
                   <div className="flex items-center border rounded-md">
@@ -180,7 +218,7 @@ export function ArticleList() {
                   ? "grid grid-cols-1 md:grid-cols-2" 
                   : "flex flex-col space-y-4"
               )}>
-                {sortedArticles.map((article) => (
+                {paginatedArticles.map((article) => (
                   <ArticleCard
                     key={article.id}
                     article={article}
@@ -202,43 +240,131 @@ export function ArticleList() {
 
               {/* 分页控制 */}
               {sortedArticles.length > 0 && (
-                <div className="flex items-center justify-center gap-2 mt-8">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage <= 1}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    上一页
-                  </Button>
-                  
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      const page = i + 1
-                      return (
-                        <Button
-                          key={page}
-                          variant={currentPage === page ? 'default' : 'outline'}
-                          size="sm"
-                          onClick={() => handlePageChange(page)}
-                          className="w-10"
-                        >
-                          {page}
-                        </Button>
-                      )
-                    })}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">
+                  <div className="text-sm text-muted-foreground">
+                    显示 {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, sortedArticles.length)} 篇，共 {sortedArticles.length} 篇文章
                   </div>
+                  
+                  <div className="flex items-center justify-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage <= 1}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      上一页
+                    </Button>
+                    
+                    <div className="flex items-center gap-1">
+                      {/* 显示前几页 */}
+                      {totalPages <= 7 ? (
+                        // 如果总页数小于等于7，显示所有页码
+                        Array.from({ length: totalPages }, (_, i) => {
+                          const page = i + 1
+                          return (
+                            <Button
+                              key={page}
+                              variant={currentPage === page ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => handlePageChange(page)}
+                              className="w-10"
+                            >
+                              {page}
+                            </Button>
+                          )
+                        })
+                      ) : (
+                        // 如果总页数大于7，显示部分页码
+                        <>
+                          {/* 始终显示第一页 */}
+                          <Button
+                            variant={currentPage === 1 ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => handlePageChange(1)}
+                            className="w-10"
+                          >
+                            1
+                          </Button>
+                          
+                          {/* 如果当前页大于3，显示省略号 */}
+                          {currentPage > 3 && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-10"
+                              disabled
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          )}
+                          
+                          {/* 显示当前页附近的页码 */}
+                          {Array.from({ length: 3 }, (_, i) => {
+                            let page
+                            if (currentPage <= 3) {
+                              // 如果当前页小于等于3，显示2-4页
+                              page = i + 2
+                            } else if (currentPage >= totalPages - 2) {
+                              // 如果当前页接近末尾，显示倒数第4-2页
+                              page = totalPages - 4 + i
+                            } else {
+                              // 否则显示当前页的前一页、当前页和后一页
+                              page = currentPage - 1 + i
+                            }
+                            
+                            // 确保页码在有效范围内
+                            if (page > 1 && page < totalPages) {
+                              return (
+                                <Button
+                                  key={page}
+                                  variant={currentPage === page ? 'default' : 'outline'}
+                                  size="sm"
+                                  onClick={() => handlePageChange(page)}
+                                  className="w-10"
+                                >
+                                  {page}
+                                </Button>
+                              )
+                            }
+                            return null
+                          })}
+                          
+                          {/* 如果当前页小于总页数-2，显示省略号 */}
+                          {currentPage < totalPages - 2 && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-10"
+                              disabled
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          )}
+                          
+                          {/* 始终显示最后一页 */}
+                          <Button
+                            variant={currentPage === totalPages ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => handlePageChange(totalPages)}
+                            className="w-10"
+                          >
+                            {totalPages}
+                          </Button>
+                        </>
+                      )}
+                    </div>
 
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage >= totalPages}
-                  >
-                    下一页
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage >= totalPages}
+                    >
+                      下一页
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               )}
             </section>
