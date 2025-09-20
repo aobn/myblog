@@ -57,11 +57,12 @@ export function ArticleCard({ article, variant = 'default', className }: Article
       )}
       onClick={handleCardClick}
     >
-      <div className="flex gap-4 p-4">
-        {/* 左侧内容区域 */}
-        <div className="flex-1 space-y-2">
+      {/* 响应式布局：大屏幕横向，小屏幕纵向 */}
+      <div className="flex flex-col sm:flex-row gap-4 p-4">
+        {/* 内容区域 */}
+        <div className="flex-1 space-y-2 min-w-0">
           {/* 分类标签 */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {article.category && (
               <Badge 
                 variant="secondary" 
@@ -99,7 +100,7 @@ export function ArticleCard({ article, variant = 'default', className }: Article
           )}
 
           {/* 文章元信息 */}
-          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+          <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               <span>{formatDate(article.publishedAt)}</span>
@@ -111,19 +112,14 @@ export function ArticleCard({ article, variant = 'default', className }: Article
           </div>
         </div>
 
-        {/* 右侧图片区域 */}
+        {/* 图片区域 - 响应式尺寸 */}
         {article.coverImage && (
-          <div className="relative w-40 h-full flex-shrink-0">
+          <div className="relative w-full sm:w-32 md:w-40 h-32 sm:h-24 md:h-full flex-shrink-0">
             <img
               src={article.coverImage}
               alt={article.title}
-              className="w-full h-full object-fill rounded-lg transition-transform duration-300 hover:scale-105"
+              className="w-full h-full object-cover rounded-lg transition-transform duration-300 hover:scale-105"
             />
-            {variant === 'featured' && (
-              <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs">
-                精选
-              </Badge>
-            )}
           </div>
         )}
       </div>

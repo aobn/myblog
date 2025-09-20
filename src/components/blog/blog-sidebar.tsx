@@ -47,7 +47,7 @@ const processCategoriesData = (articles: Article[]): Category[] => {
       article.isPublished && article.category?.name === name
     ).length,
     color: data.color
-  })).sort((a, b) => b.articleCount - a.articleCount)
+  })).sort((a, b) => b.articleCount - a.articleCount).slice(0, 10) // 只取前10个分类
 }
 
 // 处理标签数据
