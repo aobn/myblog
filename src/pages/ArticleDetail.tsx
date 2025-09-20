@@ -6,163 +6,26 @@
  */
 
 import * as React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, Calendar, Clock, Eye, Heart, Share2, Bookmark, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import rehypeHighlight from 'rehype-highlight'
+import rehypeRaw from 'rehype-raw'
+import 'highlight.js/styles/github-dark.css'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { BlogSidebar } from '@/components/blog/blog-sidebar'
 import { ArticleCard } from '@/components/blog/article-card'
+import { getPostById, loadAllPosts } from '@/lib/simple-post-loader'
 import type { Article, Comment } from '@/types/blog'
 import { cn } from '@/lib/utils'
 
-// 模拟文章详情数据
-const mockArticle: Article = {
-  id: '1',
-  title: 'React 19 新特性深度解析：并发渲染与 Suspense 的革命性改进',
-  content: `
-# React 19 新特性深度解析
 
-React 19 带来了许多令人兴奋的新特性和改进，本文将深入探讨这些变化如何影响我们的开发方式。
-
-## 并发渲染机制
-
-React 19 的并发渲染机制是一个重大突破，它允许 React 在渲染过程中暂停和恢复工作，从而提供更好的用户体验。
-
-### 主要特性
-
-1. **时间切片（Time Slicing）**
-   - 将长时间运行的任务分解为小块
-   - 避免阻塞主线程
-   - 提供更流畅的用户交互
-
-2. **优先级调度**
-   - 高优先级任务优先处理
-   - 用户交互响应更快
-   - 智能的任务调度算法
-
-## Suspense 边界优化
-
-Suspense 组件在 React 19 中得到了显著改进：
-
-\`\`\`jsx
-function App() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <AsyncComponent />
-    </Suspense>
-  )
-}
-\`\`\`
-
-### 新的 Hook API
-
-React 19 引入了几个新的 Hook：
-
-- **useTransition**: 处理非紧急更新
-- **useDeferredValue**: 延迟值更新
-- **useId**: 生成唯一标识符
-
-## 性能优化建议
-
-1. 合理使用 Suspense 边界
-2. 利用并发特性优化用户体验
-3. 避免不必要的重渲染
-
-## 总结
-
-React 19 的这些新特性为我们提供了更强大的工具来构建高性能的用户界面。通过合理使用这些特性，我们可以创建更流畅、更响应的应用程序。
-  `,
-  excerpt: '深入探讨 React 19 带来的并发渲染机制、Suspense 边界优化，以及新的 Hook API 如何改变我们的开发方式。',
-  author: {
-    id: '1',
-    name: '张三',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop&crop=face',
-    bio: '前端架构师，专注于 React 生态系统和性能优化',
-    email: 'zhangsan@example.com',
-    website: 'https://zhangsan.dev',
-    socialLinks: [
-      { platform: 'github', url: 'https://github.com/zhangsan' },
-      { platform: 'twitter', url: 'https://twitter.com/zhangsan' }
-    ]
-  },
-  category: { id: '1', name: 'React', slug: 'react', articleCount: 18, color: '#61dafb' },
-  tags: [
-    { id: '1', name: 'React', slug: 'react', articleCount: 32 },
-    { id: '2', name: 'JavaScript', slug: 'javascript', articleCount: 45 },
-    { id: '3', name: '前端开发', slug: 'frontend', articleCount: 28 }
-  ],
-  publishedAt: '2025-09-15T10:00:00Z',
-  updatedAt: '2025-09-15T10:00:00Z',
-  readTime: 12,
-  viewCount: 1250,
-  likeCount: 89,
-  coverImage: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=1200&h=600&fit=crop',
-  isPublished: true
-}
-
-// 模拟评论数据
-const mockComments: Comment[] = [
-  {
-    id: '1',
-    content: '非常详细的文章！React 19 的并发特性确实很令人期待。',
-    author: {
-      name: '李四',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face',
-      email: 'lisi@example.com'
-    },
-    articleId: '1',
-    createdAt: '2025-09-15T12:30:00Z',
-    replies: [
-      {
-        id: '2',
-        content: '同感！特别是时间切片的概念很有意思。',
-        author: {
-          name: '王五',
-          avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face'
-        },
-        articleId: '1',
-        parentId: '1',
-        createdAt: '2025-09-15T14:15:00Z'
-      }
-    ]
-  },
-  {
-    id: '3',
-    content: '请问有实际的项目案例可以参考吗？',
-    author: {
-      name: '赵六',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=32&h=32&fit=crop&crop=face'
-    },
-    articleId: '1',
-    createdAt: '2025-09-15T16:45:00Z'
-  }
-]
-
-// 相关文章
-const relatedArticles: Article[] = [
-  {
-    id: '2',
-    title: 'TypeScript 5.0 实战指南',
-    excerpt: '全面解析 TypeScript 5.0 的新特性',
-    publishedAt: '2025-09-12T14:30:00Z',
-    readTime: 15,
-    viewCount: 980,
-    likeCount: 67,
-  } as Article,
-  {
-    id: '3',
-    title: 'Vite 构建优化技巧',
-    excerpt: '提升开发体验的实用方法',
-    publishedAt: '2025-09-10T09:15:00Z',
-    readTime: 8,
-    viewCount: 756,
-    likeCount: 45,
-  } as Article
-]
 
 // 格式化日期
 const formatDate = (dateString: string) => {
@@ -181,9 +44,73 @@ const getAuthorInitials = (name: string) => {
 }
 
 export function ArticleDetail() {
+  const { id } = useParams<{ id: string }>()
+  const [article, setArticle] = React.useState<Article | null>(null)
+  const [relatedArticles, setRelatedArticles] = React.useState<Article[]>([])
+  const [loading, setLoading] = React.useState(true)
   const [isLiked, setIsLiked] = React.useState(false)
   const [isBookmarked, setIsBookmarked] = React.useState(false)
   const [comment, setComment] = React.useState('')
+
+  // 加载文章数据
+  React.useEffect(() => {
+    const loadArticle = async () => {
+      if (!id) return
+      
+      setLoading(true)
+      try {
+        // 根据 ID 获取文章
+        const currentArticle = await getPostById(id)
+        setArticle(currentArticle)
+        
+        // 加载相关文章
+        const allPosts = await loadAllPosts()
+        const related = allPosts
+          .filter(post => post.id !== currentArticle?.id)
+          .slice(0, 2)
+        setRelatedArticles(related)
+        
+      } catch (error) {
+        console.error('Error loading article:', error)
+        setArticle(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    loadArticle()
+  }, [id])
+
+  if (loading) {
+    return (
+      <div className="bg-background">
+        <main className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center min-h-96">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">加载中...</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  if (!article) {
+    return (
+      <div className="bg-background">
+        <main className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <h1 className="text-2xl font-bold mb-4">文章未找到</h1>
+            <p className="text-muted-foreground mb-6">抱歉，您访问的文章不存在或已被删除。</p>
+            <Link to="/">
+              <Button>返回首页</Button>
+            </Link>
+          </div>
+        </main>
+      </div>
+    )
+  }
 
   // 处理点赞
   const handleLike = () => {
@@ -197,10 +124,10 @@ export function ArticleDetail() {
 
   // 处理分享
   const handleShare = () => {
-    if (navigator.share) {
+    if (navigator.share && article) {
       navigator.share({
-        title: mockArticle.title,
-        text: mockArticle.excerpt,
+        title: article.title,
+        text: article.excerpt,
         url: window.location.href
       })
     } else {
@@ -234,11 +161,11 @@ export function ArticleDetail() {
             {/* 文章头部 */}
             <header className="space-y-6 mb-8">
               {/* 封面图片 */}
-              {mockArticle.coverImage && (
+              {article.coverImage && (
                 <div className="relative overflow-hidden rounded-xl">
                   <img
-                    src={mockArticle.coverImage}
-                    alt={mockArticle.title}
+                    src={article.coverImage}
+                    alt={article.title}
                     className="w-full h-64 md:h-80 object-cover"
                   />
                 </div>
@@ -248,11 +175,11 @@ export function ArticleDetail() {
               <div className="flex flex-wrap items-center gap-2">
                 <Badge 
                   variant="secondary"
-                  style={{ backgroundColor: mockArticle.category.color + '20', color: mockArticle.category.color }}
+                  style={{ backgroundColor: (article.category.color || '#6b7280') + '20', color: article.category.color || '#6b7280' }}
                 >
-                  {mockArticle.category.name}
+                  {article.category.name}
                 </Badge>
-                {mockArticle.tags.map((tag) => (
+                {article.tags.map((tag) => (
                   <Badge key={tag.id} variant="outline">
                     {tag.name}
                   </Badge>
@@ -261,36 +188,36 @@ export function ArticleDetail() {
 
               {/* 文章标题 */}
               <h1 className="text-3xl md:text-4xl font-bold leading-tight">
-                {mockArticle.title}
+                {article.title}
               </h1>
 
               {/* 文章元信息 */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-4 border-y">
                 <div className="flex items-center gap-4">
                   <Avatar className="h-12 w-12">
-                    <AvatarImage src={mockArticle.author.avatar} alt={mockArticle.author.name} />
+                    <AvatarImage src={article.author.avatar} alt={article.author.name} />
                     <AvatarFallback>
-                      {getAuthorInitials(mockArticle.author.name)}
+                      {getAuthorInitials(article.author.name)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-medium">{mockArticle.author.name}</p>
-                    <p className="text-sm text-muted-foreground">{mockArticle.author.bio}</p>
+                    <p className="font-medium">{article.author.name}</p>
+                    <p className="text-sm text-muted-foreground">{article.author.bio}</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-6 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
-                    <span>{formatDate(mockArticle.publishedAt)}</span>
+                    <span>{formatDate(article.publishedAt)}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Clock className="h-4 w-4" />
-                    <span>{mockArticle.readTime} 分钟阅读</span>
+                    <span>{article.readTime} 分钟阅读</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Eye className="h-4 w-4" />
-                    <span>{mockArticle.viewCount} 次阅读</span>
+                    <span>{article.viewCount} 次阅读</span>
                   </div>
                 </div>
               </div>
@@ -304,7 +231,7 @@ export function ArticleDetail() {
                   className="gap-2"
                 >
                   <Heart className={cn("h-4 w-4", isLiked && "fill-current")} />
-                  {mockArticle.likeCount + (isLiked ? 1 : 0)}
+                  {article.likeCount + (isLiked ? 1 : 0)}
                 </Button>
                 
                 <Button
@@ -325,10 +252,85 @@ export function ArticleDetail() {
             </header>
 
             {/* 文章内容 */}
-            <div className="prose prose-lg max-w-none mb-12">
-              <div className="whitespace-pre-wrap leading-relaxed">
-                {mockArticle.content}
-              </div>
+            <div className="mb-12 prose prose-lg dark:prose-invert max-w-none text-left [&>*]:text-left">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeHighlight, rehypeRaw]}
+                components={{
+                  code: ({ node, inline, className, children, ...props }) => {
+                    const match = /language-(\w+)/.exec(className || '')
+                    return !inline && match ? (
+                      <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
+                        <code className={className} {...props}>
+                          {children}
+                        </code>
+                      </pre>
+                    ) : (
+                      <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
+                        {children}
+                      </code>
+                    )
+                  },
+                  pre: ({ children }) => <>{children}</>,
+                  h1: ({ children }) => (
+                    <h1 className="text-3xl font-bold mb-6 mt-8 text-foreground border-b pb-2">
+                      {children}
+                    </h1>
+                  ),
+                  h2: ({ children }) => (
+                    <h2 className="text-2xl font-semibold mb-4 mt-8 text-foreground">
+                      {children}
+                    </h2>
+                  ),
+                  h3: ({ children }) => (
+                    <h3 className="text-xl font-semibold mb-3 mt-6 text-foreground">
+                      {children}
+                    </h3>
+                  ),
+                  p: ({ children }) => (
+                    <p className="mb-4 leading-7 text-muted-foreground">
+                      {children}
+                    </p>
+                  ),
+                  ul: ({ children }) => (
+                    <ul className="mb-4 ml-6 list-disc space-y-2">
+                      {children}
+                    </ul>
+                  ),
+                  ol: ({ children }) => (
+                    <ol className="mb-4 ml-6 list-decimal space-y-2">
+                      {children}
+                    </ol>
+                  ),
+                  li: ({ children }) => (
+                    <li className="text-muted-foreground">
+                      {children}
+                    </li>
+                  ),
+                  blockquote: ({ children }) => (
+                    <blockquote className="border-l-4 border-primary pl-4 italic my-4 text-muted-foreground">
+                      {children}
+                    </blockquote>
+                  ),
+                  strong: ({ children }) => (
+                    <strong className="font-semibold text-foreground">
+                      {children}
+                    </strong>
+                  ),
+                  a: ({ href, children }) => (
+                    <a 
+                      href={href} 
+                      className="text-primary hover:underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {children}
+                    </a>
+                  ),
+                }}
+              >
+                {article.content}
+              </ReactMarkdown>
             </div>
 
             <Separator className="my-8" />
@@ -337,7 +339,7 @@ export function ArticleDetail() {
             <section className="space-y-6">
               <h3 className="text-xl font-semibold flex items-center gap-2">
                 <MessageCircle className="h-5 w-5" />
-                评论 ({mockComments.length})
+                评论
               </h3>
 
               {/* 评论表单 */}
@@ -359,57 +361,14 @@ export function ArticleDetail() {
                 </CardContent>
               </Card>
 
-              {/* 评论列表 */}
-              <div className="space-y-6">
-                {mockComments.map((comment) => (
-                  <Card key={comment.id}>
-                    <CardContent className="pt-6">
-                      <div className="flex gap-4">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={comment.author.avatar} alt={comment.author.name} />
-                          <AvatarFallback>
-                            {getAuthorInitials(comment.author.name)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 space-y-2">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">{comment.author.name}</span>
-                            <span className="text-sm text-muted-foreground">
-                              {formatDate(comment.createdAt)}
-                            </span>
-                          </div>
-                          <p className="text-sm leading-relaxed">{comment.content}</p>
-                          
-                          {/* 回复 */}
-                          {comment.replies && comment.replies.length > 0 && (
-                            <div className="mt-4 pl-4 border-l-2 border-muted space-y-4">
-                              {comment.replies.map((reply) => (
-                                <div key={reply.id} className="flex gap-3">
-                                  <Avatar className="h-8 w-8">
-                                    <AvatarImage src={reply.author.avatar} alt={reply.author.name} />
-                                    <AvatarFallback className="text-xs">
-                                      {getAuthorInitials(reply.author.name)}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <div className="flex-1 space-y-1">
-                                    <div className="flex items-center gap-2">
-                                      <span className="font-medium text-sm">{reply.author.name}</span>
-                                      <span className="text-xs text-muted-foreground">
-                                        {formatDate(reply.createdAt)}
-                                      </span>
-                                    </div>
-                                    <p className="text-sm leading-relaxed">{reply.content}</p>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              {/* 评论提示 */}
+              <Card>
+                <CardContent className="pt-6">
+                  <p className="text-center text-muted-foreground">
+                    暂无评论，快来发表第一条评论吧！
+                  </p>
+                </CardContent>
+              </Card>
             </section>
 
             <Separator className="my-8" />

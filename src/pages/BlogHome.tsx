@@ -14,107 +14,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { BlogSidebar } from '@/components/blog/blog-sidebar'
 import { ArticleCard } from '@/components/blog/article-card'
 import { useBlogStore } from '@/store/blog-store'
+import { loadAllPosts } from '@/lib/simple-post-loader'
 import type { Article } from '@/types/blog'
 import { cn } from '@/lib/utils'
 
-// 模拟文章数据
-const mockArticles: Article[] = [
-  {
-    id: '1',
-    title: 'React 19 新特性深度解析：并发渲染与 Suspense 的革命性改进',
-    content: '',
-    excerpt: '深入探讨 React 19 带来的并发渲染机制、Suspense 边界优化，以及新的 Hook API 如何改变我们的开发方式。',
-    author: {
-      id: '1',
-      name: '张三',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face',
-      bio: '前端架构师'
-    },
-    category: { id: '1', name: 'React', slug: 'react', articleCount: 18, color: '#61dafb' },
-    tags: [
-      { id: '1', name: 'React', slug: 'react', articleCount: 32 },
-      { id: '2', name: 'JavaScript', slug: 'javascript', articleCount: 45 }
-    ],
-    publishedAt: '2025-09-15T10:00:00Z',
-    updatedAt: '2025-09-15T10:00:00Z',
-    readTime: 12,
-    viewCount: 1250,
-    likeCount: 89,
-    coverImage: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=400&fit=crop',
-    isPublished: true
-  },
-  {
-    id: '2',
-    title: 'TypeScript 5.0 实战指南：类型系统的新突破',
-    content: '',
-    excerpt: '全面解析 TypeScript 5.0 的新特性，包括装饰器、const 断言、模板字面量类型等高级功能的实际应用。',
-    author: {
-      id: '2',
-      name: '李四',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face',
-      bio: '全栈开发工程师'
-    },
-    category: { id: '2', name: 'TypeScript', slug: 'typescript', articleCount: 12, color: '#3178c6' },
-    tags: [
-      { id: '3', name: 'TypeScript', slug: 'typescript', articleCount: 28 },
-      { id: '4', name: '类型系统', slug: 'type-system', articleCount: 15 }
-    ],
-    publishedAt: '2025-09-12T14:30:00Z',
-    updatedAt: '2025-09-12T14:30:00Z',
-    readTime: 15,
-    viewCount: 980,
-    likeCount: 67,
-    coverImage: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&h=400&fit=crop',
-    isPublished: true
-  },
-  {
-    id: '3',
-    title: 'Tailwind CSS 最佳实践：构建可维护的设计系统',
-    content: '',
-    excerpt: '学习如何使用 Tailwind CSS 构建一致性强、可维护的设计系统，包括组件抽象和主题定制。',
-    author: {
-      id: '3',
-      name: '王五',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face',
-      bio: 'UI/UX 设计师'
-    },
-    category: { id: '3', name: 'CSS', slug: 'css', articleCount: 20, color: '#06b6d4' },
-    tags: [
-      { id: '5', name: 'CSS', slug: 'css', articleCount: 35 },
-      { id: '6', name: 'Tailwind', slug: 'tailwind', articleCount: 18 }
-    ],
-    publishedAt: '2025-09-10T09:15:00Z',
-    updatedAt: '2025-09-10T09:15:00Z',
-    readTime: 8,
-    viewCount: 756,
-    likeCount: 45,
-    coverImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=400&fit=crop',
-    isPublished: true
-  },
-  {
-    id: '4',
-    title: 'Vite 构建优化：提升开发体验的实用技巧',
-    content: '',
-    excerpt: '深入了解 Vite 的构建机制，掌握性能优化、插件开发和部署配置的最佳实践。',
-    author: {
-      id: '1',
-      name: '张三',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face',
-      bio: '前端架构师'
-    },
-    category: { id: '4', name: '工具', slug: 'tools', articleCount: 8, color: '#10b981' },
-    tags: [
-      { id: '7', name: 'Vite', slug: 'vite', articleCount: 12 },
-      { id: '8', name: '构建工具', slug: 'build-tools', articleCount: 9 }
-    ],
-    publishedAt: '2025-09-08T16:45:00Z',
-    updatedAt: '2025-09-08T16:45:00Z',
-    readTime: 10,
-    viewCount: 623,
-    likeCount: 38,
-    isPublished: true
-  }
-]
+
 
 export function BlogHome() {
   const { 
@@ -128,11 +32,45 @@ export function BlogHome() {
 
   const [viewMode, setViewMode] = React.useState<'grid' | 'list'>('grid')
   const [sortBy, setSortBy] = React.useState<'latest' | 'popular' | 'trending'>('latest')
+  const [articles, setArticles] = React.useState<Article[]>([])
+  const [loading, setLoading] = React.useState(true)
+
+  // 加载文章数据
+  React.useEffect(() => {
+    const loadArticles = async () => {
+      try {
+        const posts = await loadAllPosts()
+        setArticles(posts)
+      } catch (error) {
+        console.error('Error loading posts:', error)
+        setArticles([])
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    loadArticles()
+  }, [])
 
   // 精选文章（取前2篇）
-  const featuredArticles = mockArticles.slice(0, 2)
+  const featuredArticles = articles.slice(0, 2)
   // 普通文章列表
-  const regularArticles = mockArticles.slice(2)
+  const regularArticles = articles.slice(2)
+
+  if (loading) {
+    return (
+      <div className="bg-background">
+        <main className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center min-h-96">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">加载文章中...</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  }
 
   // 处理分页
   const handlePageChange = (page: number) => {

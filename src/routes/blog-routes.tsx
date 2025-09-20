@@ -9,6 +9,7 @@ import * as React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { BlogHome } from '@/pages/BlogHome'
 import { ArticleDetail } from '@/pages/ArticleDetail'
+import { TestPost } from '@/pages/TestPost'
 
 // 懒加载其他页面组件
 const CategoriesPage = React.lazy(() => import('@/pages/Categories'))
@@ -33,6 +34,9 @@ export function BlogRoutes() {
         
         {/* 文章详情 */}
         <Route path="/article/:id" element={<ArticleDetail />} />
+        
+        {/* 测试文章页面 */}
+        <Route path="/test-post" element={<TestPost />} />
         
         {/* 文章列表 */}
         <Route path="/articles" element={<BlogHome />} />
