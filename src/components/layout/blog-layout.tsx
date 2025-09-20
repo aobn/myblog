@@ -5,7 +5,8 @@
  * @date 2025-09-18
  */
 
-import { Outlet } from 'react-router-dom'
+import * as React from 'react'
+import { Outlet, useLocation } from 'react-router-dom'
 import { BlogHeader } from '@/components/blog/blog-header'
 import { BlogFooter } from '@/components/blog/blog-footer'
 
@@ -14,6 +15,13 @@ import { BlogFooter } from '@/components/blog/blog-footer'
  * 包含头部导航、主要内容区域和底部信息
  */
 export function BlogLayout() {
+  const location = useLocation()
+
+  // 路由变化时立即跳转到顶部
+  React.useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [location.pathname])
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* 头部导航 */}

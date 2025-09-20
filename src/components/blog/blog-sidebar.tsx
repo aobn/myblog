@@ -1,7 +1,7 @@
 /**
  * 博客侧边栏组件
  * 
- * @author x'x'h
+ * @author xxh
  * @date 2025-09-18
  */
 
