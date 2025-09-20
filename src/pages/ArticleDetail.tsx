@@ -22,7 +22,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { BlogSidebar } from '@/components/blog/blog-sidebar'
 import { ArticleCard } from '@/components/blog/article-card'
 import { getPostById, loadAllPosts } from '@/lib/simple-post-loader'
-import type { Article, Comment } from '@/types/blog'
+import type { Article } from '@/types/blog'
 import { cn } from '@/lib/utils'
 
 
@@ -257,9 +257,9 @@ export function ArticleDetail() {
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeHighlight, rehypeRaw]}
                 components={{
-                  code: ({ node, inline, className, children, ...props }) => {
+                  code: ({ node, className, children, ...props }) => {
                     const match = /language-(\w+)/.exec(className || '')
-                    return !inline && match ? (
+                    return match ? (
                       <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
                         <code className={className} {...props}>
                           {children}

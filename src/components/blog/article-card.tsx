@@ -5,12 +5,10 @@
  * @date 2025-09-18
  */
 
-import { Link } from 'react-router-dom'
-import { Calendar, Clock, Eye, Heart } from 'lucide-react'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Link, useNavigate } from 'react-router-dom'
+import { Calendar, Clock } from 'lucide-react'
+import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
 import type { Article } from '@/types/blog'
 import { cn } from '@/lib/utils'
 
@@ -29,126 +27,106 @@ const formatDate = (dateString: string) => {
   })
 }
 
-// 获取作者姓名首字母
-const getAuthorInitials = (name: string) => {
-  return name.split(' ').map(n => n[0]).join('').toUpperCase()
-}
+
 
 export function ArticleCard({ article, variant = 'default', className }: ArticleCardProps) {
+  const navigate = useNavigate();
   const cardVariants = {
-    default: 'hover:shadow-lg transition-all duration-300',
+    default: 'transition-all duration-300',
     featured: 'border-primary/20 bg-gradient-to-br from-primary/5 to-transparent',
     compact: 'shadow-sm'
   }
+  
+  // 处理卡片点击事件
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // 检查点击的元素是否是链接或其子元素
+    const isLinkClick = (e.target as HTMLElement).closest('a, button, .no-card-click');
+    
+    // 如果点击的是链接或其子元素，不执行导航操作
+    if (!isLinkClick) {
+      navigate(`/article/${article.id}`);
+    }
+  };
 
   return (
-    <Card className={cn(cardVariants[variant], className)}>
-      {/* 封面图片 */}
-      {article.coverImage && variant !== 'compact' && (
-        <div className="relative overflow-hidden rounded-t-xl">
-          <img
-            src={article.coverImage}
-            alt={article.title}
-            className="h-48 w-full object-cover transition-transform duration-300 hover:scale-105"
-          />
-          {variant === 'featured' && (
-            <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
-              精选文章
-            </Badge>
-          )}
-        </div>
+    <Card 
+      className={cn(
+        cardVariants[variant], 
+        className, 
+        'p-0 cursor-pointer relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-primary/50'
       )}
-
-      <CardHeader className="space-y-3">
-        {/* 分类标签 */}
-        <div className="flex items-center gap-2">
-          {article.category && (
-            <Badge 
-              variant="secondary" 
-              style={{ 
-                backgroundColor: article.category.color ? article.category.color + '20' : '#f1f5f9', 
-                color: article.category.color || '#64748b' 
-              }}
-            >
-              {article.category.name}
-            </Badge>
-          )}
-          {article.tags && article.tags.slice(0, 2).map((tag) => (
-            <Badge key={tag.id} variant="outline" className="text-xs">
-              {tag.name}
-            </Badge>
-          ))}
-        </div>
-
-        {/* 文章标题 */}
-        <Link to={`/article/${article.id}`} className="group">
-          <h3 className={cn(
-            "font-semibold leading-tight group-hover:text-primary transition-colors",
-            variant === 'featured' ? 'text-xl' : 'text-lg',
-            variant === 'compact' ? 'text-base' : ''
-          )}>
-            {article.title}
-          </h3>
-        </Link>
-
-        {/* 文章摘要 */}
-        {variant !== 'compact' && (
-          <p className="text-muted-foreground text-sm line-clamp-2">
-            {article.excerpt}
-          </p>
-        )}
-      </CardHeader>
-
-      <CardContent className="space-y-4">
-        {/* 作者信息 */}
-        {article.author && (
-          <div className="flex items-center gap-3">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={article.author.avatar} alt={article.author.name} />
-              <AvatarFallback className="text-xs">
-                {getAuthorInitials(article.author.name)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{article.author.name}</p>
-            </div>
+      onClick={handleCardClick}
+    >
+      <div className="flex gap-4 p-4">
+        {/* 左侧内容区域 */}
+        <div className="flex-1 space-y-2">
+          {/* 分类标签 */}
+          <div className="flex items-center gap-2">
+            {article.category && (
+              <Badge 
+                variant="secondary" 
+                style={{ 
+                  backgroundColor: article.category.color ? article.category.color + '20' : '#f1f5f9', 
+                  color: article.category.color || '#64748b' 
+                }}
+              >
+                {article.category.name}
+              </Badge>
+            )}
+            {article.tags && article.tags.slice(0, 2).map((tag) => (
+              <Badge key={tag.id} variant="outline" className="text-xs">
+                {tag.name}
+              </Badge>
+            ))}
           </div>
-        )}
 
-        {/* 文章元信息 */}
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <div className="flex items-center gap-4">
+          {/* 文章标题 */}
+          <Link to={`/article/${article.id}`} className="group">
+            <h3 className={cn(
+              "font-semibold leading-tight group-hover:text-primary transition-colors",
+              variant === 'featured' ? 'text-xl' : 'text-lg',
+              variant === 'compact' ? 'text-base' : ''
+            )}>
+              {article.title}
+            </h3>
+          </Link>
+
+          {/* 文章摘要 */}
+          {variant !== 'compact' && (
+            <p className="text-muted-foreground text-sm line-clamp-2">
+              {article.excerpt}
+            </p>
+          )}
+
+          {/* 文章元信息 */}
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               <span>{formatDate(article.publishedAt)}</span>
             </div>
             <div className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
-              <span>{article.readTime || 0} 分钟</span>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              <Eye className="h-3 w-3" />
-              <span>{article.viewCount || 0}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Heart className="h-3 w-3" />
-              <span>{article.likeCount || 0}</span>
+              <span>{article.readTime || 0} 分钟阅读</span>
             </div>
           </div>
         </div>
 
-        {/* 阅读更多按钮 */}
-        {variant === 'featured' && (
-          <Link to={`/article/${article.id}`}>
-            <Button variant="outline" className="w-full">
-              阅读全文
-            </Button>
-          </Link>
+        {/* 右侧图片区域 */}
+        {article.coverImage && (
+          <div className="relative w-40 h-full flex-shrink-0">
+            <img
+              src={article.coverImage}
+              alt={article.title}
+              className="w-full h-full object-fill rounded-lg transition-transform duration-300 hover:scale-105"
+            />
+            {variant === 'featured' && (
+              <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs">
+                精选
+              </Badge>
+            )}
+          </div>
         )}
-      </CardContent>
+      </div>
     </Card>
   )
 }

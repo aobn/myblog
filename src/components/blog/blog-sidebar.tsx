@@ -5,6 +5,7 @@
  * @date 2025-09-18
  */
 
+import * as React from 'react'
 import { Link } from 'react-router-dom'
 import { Calendar, Tag, Folder, TrendingUp, Clock } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -14,42 +15,13 @@ import { Separator } from '@/components/ui/separator'
 import { useBlogStore } from '@/store/blog-store'
 import type { Article, Category, Tag as TagType } from '@/types/blog'
 import { cn } from '@/lib/utils'
+import { loadAllPosts } from '@/lib/simple-post-loader'
 
 interface BlogSidebarProps {
   className?: string
 }
 
 // 模拟数据 - 实际项目中应该从API获取
-const mockRecentArticles: Article[] = [
-  {
-    id: '1',
-    title: 'React 19 新特性详解',
-    excerpt: '深入了解 React 19 带来的革命性变化',
-    publishedAt: '2025-09-15',
-    readTime: 8,
-    viewCount: 1250,
-    likeCount: 89,
-  } as Article,
-  {
-    id: '2',
-    title: 'TypeScript 5.0 实战指南',
-    excerpt: '掌握 TypeScript 最新版本的核心功能',
-    publishedAt: '2025-09-12',
-    readTime: 12,
-    viewCount: 980,
-    likeCount: 67,
-  } as Article,
-  {
-    id: '3',
-    title: 'Tailwind CSS 最佳实践',
-    excerpt: '构建现代化 UI 的实用技巧',
-    publishedAt: '2025-09-10',
-    readTime: 6,
-    viewCount: 756,
-    likeCount: 45,
-  } as Article,
-]
-
 const mockCategories: Category[] = [
   { id: '1', name: '前端开发', slug: 'frontend', articleCount: 25, color: '#3b82f6' },
   { id: '2', name: 'React', slug: 'react', articleCount: 18, color: '#06b6d4' },
@@ -74,8 +46,57 @@ const formatDate = (dateString: string) => {
   })
 }
 
+// 归档数据处理
+const processArchiveData = (articles: Article[]) => {
+  const archiveMap = new Map<string, { month: string; count: number }>()
+  
+  articles
+    .filter(article => article.isPublished && article.publishedAt)
+    .forEach(article => {
+      const date = new Date(article.publishedAt)
+      const year = date.getFullYear()
+      const month = date.getMonth() + 1
+      const monthName = `${year}年${month}月`
+      
+      if (!archiveMap.has(monthName)) {
+        archiveMap.set(monthName, { month: monthName, count: 0 })
+      }
+      
+      archiveMap.get(monthName)!.count++
+    })
+  
+  // 按时间倒序排列，只取前4个月
+  return Array.from(archiveMap.values())
+    .sort((a, b) => {
+      const [yearA, monthA] = a.month.replace('年', '-').replace('月', '').split('-').map(Number)
+      const [yearB, monthB] = b.month.replace('年', '-').replace('月', '').split('-').map(Number)
+      if (yearA !== yearB) return yearB - yearA
+      return monthB - monthA
+    })
+    .slice(0, 4)
+}
+
 export function BlogSidebar({ className }: BlogSidebarProps) {
   const { selectedCategory, selectedTag, setSelectedCategory, setSelectedTag } = useBlogStore()
+  const [articles, setArticles] = React.useState<Article[]>([])
+  const [archiveData, setArchiveData] = React.useState<{ month: string; count: number }[]>([])
+
+  // 加载文章数据
+  React.useEffect(() => {
+    const loadArticles = async () => {
+      try {
+        const posts = await loadAllPosts()
+        setArticles(posts)
+        setArchiveData(processArchiveData(posts))
+      } catch (error) {
+        console.error('Error loading articles:', error)
+        setArticles([])
+        setArchiveData([])
+      }
+    }
+
+    loadArticles()
+  }, [])
 
   return (
     <aside className={cn("space-y-6", className)}>
@@ -88,7 +109,7 @@ export function BlogSidebar({ className }: BlogSidebarProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {mockRecentArticles.map((article, index) => (
+          {articles.slice(0, 3).map((article, index) => (
             <div key={article.id}>
               <Link 
                 to={`/article/${article.id}`}
@@ -108,7 +129,7 @@ export function BlogSidebar({ className }: BlogSidebarProps) {
                   </div>
                 </div>
               </Link>
-              {index < mockRecentArticles.length - 1 && (
+              {index < Math.min(articles.length, 3) - 1 && (
                 <Separator className="mt-4" />
               )}
             </div>
@@ -200,12 +221,7 @@ export function BlogSidebar({ className }: BlogSidebarProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          {[
-            { month: '2025年9月', count: 8 },
-            { month: '2025年8月', count: 12 },
-            { month: '2025年7月', count: 15 },
-            { month: '2025年6月', count: 9 },
-          ].map((archive) => (
+          {archiveData.map((archive) => (
             <Link
               key={archive.month}
               to={`/archive/${archive.month}`}

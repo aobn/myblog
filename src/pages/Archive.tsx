@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import type { Article } from '@/types/blog'
+import { loadAllPosts } from '@/lib/simple-post-loader'
 
 // 归档数据类型
 interface ArchiveMonth {
@@ -23,97 +24,41 @@ interface ArchiveMonth {
   count: number
 }
 
-// 模拟归档数据
-const mockArchiveData: ArchiveMonth[] = [
-  {
-    year: 2025,
-    month: 9,
-    monthName: '2025年9月',
-    count: 8,
-    articles: [
-      {
-        id: '1',
-        title: 'React 19 新特性深度解析',
-        publishedAt: '2025-09-15T10:00:00Z',
-        readTime: 12,
-        viewCount: 1250,
-      } as Article,
-      {
-        id: '2',
-        title: 'TypeScript 5.0 实战指南',
-        publishedAt: '2025-09-12T14:30:00Z',
-        readTime: 15,
-        viewCount: 980,
-      } as Article,
-      {
-        id: '3',
-        title: 'Tailwind CSS 最佳实践',
-        publishedAt: '2025-09-10T09:15:00Z',
-        readTime: 8,
-        viewCount: 756,
-      } as Article,
-    ]
-  },
-  {
-    year: 2025,
-    month: 8,
-    monthName: '2025年8月',
-    count: 12,
-    articles: [
-      {
-        id: '4',
-        title: 'Vite 构建优化技巧',
-        publishedAt: '2025-08-28T16:45:00Z',
-        readTime: 10,
-        viewCount: 623,
-      } as Article,
-      {
-        id: '5',
-        title: 'Vue 3 Composition API 深入理解',
-        publishedAt: '2025-08-25T11:20:00Z',
-        readTime: 14,
-        viewCount: 892,
-      } as Article,
-    ]
-  },
-  {
-    year: 2025,
-    month: 7,
-    monthName: '2025年7月',
-    count: 15,
-    articles: [
-      {
-        id: '6',
-        title: 'JavaScript 性能优化实践',
-        publishedAt: '2025-07-30T14:15:00Z',
-        readTime: 11,
-        viewCount: 1045,
-      } as Article,
-      {
-        id: '7',
-        title: 'CSS Grid 布局完全指南',
-        publishedAt: '2025-07-28T09:30:00Z',
-        readTime: 9,
-        viewCount: 734,
-      } as Article,
-    ]
-  },
-  {
-    year: 2025,
-    month: 6,
-    monthName: '2025年6月',
-    count: 9,
-    articles: [
-      {
-        id: '8',
-        title: 'Node.js 微服务架构设计',
-        publishedAt: '2025-06-25T13:45:00Z',
-        readTime: 16,
-        viewCount: 567,
-      } as Article,
-    ]
-  }
-]
+// 处理归档数据
+const processArchiveData = (articles: Article[]): ArchiveMonth[] => {
+  const archiveMap = new Map<string, ArchiveMonth>()
+  
+  articles
+    .filter(article => article.isPublished && article.publishedAt)
+    .forEach(article => {
+      const date = new Date(article.publishedAt)
+      const year = date.getFullYear()
+      const month = date.getMonth() + 1
+      const key = `${year}-${month}`
+      const monthName = `${year}年${month}月`
+      
+      if (!archiveMap.has(key)) {
+        archiveMap.set(key, {
+          year,
+          month,
+          monthName,
+          articles: [],
+          count: 0
+        })
+      }
+      
+      const archiveItem = archiveMap.get(key)!
+      archiveItem.articles.push(article)
+      archiveItem.count++
+    })
+  
+  // 按时间倒序排列
+  return Array.from(archiveMap.values())
+    .sort((a, b) => {
+      if (a.year !== b.year) return b.year - a.year
+      return b.month - a.month
+    })
+}
 
 // 格式化日期
 const formatDate = (dateString: string) => {
@@ -125,7 +70,37 @@ const formatDate = (dateString: string) => {
 
 export default function Archive() {
   const { month } = useParams()
-  const [openMonths, setOpenMonths] = React.useState<Set<string>>(new Set(['2025年9月']))
+  const [articles, setArticles] = React.useState<Article[]>([])
+  const [loading, setLoading] = React.useState(true)
+  const [openMonths, setOpenMonths] = React.useState<Set<string>>(new Set())
+
+  // 加载文章数据
+  React.useEffect(() => {
+    const loadArticles = async () => {
+      try {
+        setLoading(true)
+        const posts = await loadAllPosts()
+        setArticles(posts)
+      } catch (error) {
+        console.error('Error loading articles:', error)
+        setArticles([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadArticles()
+  }, [])
+
+  // 处理归档数据
+  const archiveData = React.useMemo(() => processArchiveData(articles), [articles])
+  
+  // 默认展开最新月份
+  React.useEffect(() => {
+    if (archiveData.length > 0 && openMonths.size === 0) {
+      setOpenMonths(new Set([archiveData[0].monthName]))
+    }
+  }, [archiveData, openMonths.size])
 
   // 切换月份展开状态
   const toggleMonth = (monthName: string) => {
@@ -140,16 +115,30 @@ export default function Archive() {
 
   // 如果指定了月份，只显示该月份的文章
   const filteredData = month 
-    ? mockArchiveData.filter(archive => archive.monthName === month)
-    : mockArchiveData
+    ? archiveData.filter(archive => archive.monthName === month)
+    : archiveData
 
   // 统计总数
-  const totalArticles = mockArchiveData.reduce((sum, archive) => sum + archive.count, 0)
-  const totalMonths = mockArchiveData.length
+  const totalArticles = archiveData.reduce((sum, archive) => sum + archive.count, 0)
+  const totalMonths = archiveData.length
+
+  if (loading) {
+    return (
+      <div className="bg-background">
+        <main className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-4 text-muted-foreground">加载归档数据中...</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  }
 
   return (
     <div className="bg-background">
-      
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* 页面标题 */}
@@ -169,28 +158,30 @@ export default function Archive() {
           </div>
 
           {/* 统计信息 */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
-              <CardContent className="pt-6 text-center">
-                <div className="text-2xl font-bold text-primary">{totalArticles}</div>
-                <div className="text-sm text-muted-foreground">篇文章</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6 text-center">
-                <div className="text-2xl font-bold text-primary">{totalMonths}</div>
-                <div className="text-sm text-muted-foreground">个月份</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6 text-center">
-                <div className="text-2xl font-bold text-primary">
-                  {Math.round(totalArticles / totalMonths)}
-                </div>
-                <div className="text-sm text-muted-foreground">月均文章</div>
-              </CardContent>
-            </Card>
-          </div>
+          {totalArticles > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card>
+                <CardContent className="pt-6 text-center">
+                  <div className="text-2xl font-bold text-primary">{totalArticles}</div>
+                  <div className="text-sm text-muted-foreground">篇文章</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6 text-center">
+                  <div className="text-2xl font-bold text-primary">{totalMonths}</div>
+                  <div className="text-sm text-muted-foreground">个月份</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6 text-center">
+                  <div className="text-2xl font-bold text-primary">
+                    {totalMonths > 0 ? Math.round(totalArticles / totalMonths) : 0}
+                  </div>
+                  <div className="text-sm text-muted-foreground">月均文章</div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
 
           {/* 归档列表 */}
           <div className="space-y-4">
@@ -242,24 +233,13 @@ export default function Archive() {
                                 </h3>
                                 <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                                   <span>{formatDate(article.publishedAt)}</span>
-                                  <span>{article.readTime} 分钟阅读</span>
-                                  <span>{article.viewCount} 次阅读</span>
+                                  {article.readTime && <span>{article.readTime} 分钟阅读</span>}
+                                  {article.viewCount && <span>{article.viewCount} 次阅读</span>}
                                 </div>
                               </div>
                             </div>
                           </Link>
                         ))}
-                        
-                        {/* 显示更多按钮 */}
-                        {archive.articles.length < archive.count && (
-                          <div className="text-center pt-2">
-                            <Link to={`/archive/${archive.monthName}`}>
-                              <Button variant="outline" size="sm">
-                                查看更多 ({archive.count - archive.articles.length} 篇)
-                              </Button>
-                            </Link>
-                          </div>
-                        )}
                       </div>
                     </CardContent>
                   </CollapsibleContent>

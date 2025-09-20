@@ -97,7 +97,7 @@ export function BlogHome() {
                 <Badge variant="secondary">Featured</Badge>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-4">
                 {featuredArticles.map((article) => (
                   <ArticleCard
                     key={article.id}
@@ -170,9 +170,9 @@ export function BlogHome() {
 
               {/* 文章网格/列表 */}
               <div className={cn(
-                "gap-6",
+                "gap-4",
                 viewMode === 'grid' 
-                  ? "grid grid-cols-1 md:grid-cols-2" 
+                  ? "grid grid-cols-1" 
                   : "flex flex-col space-y-4"
               )}>
                 {regularArticles.map((article) => (

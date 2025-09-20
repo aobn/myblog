@@ -170,7 +170,7 @@ export async function loadAllPosts(): Promise<Article[]> {
             articleCount: 1,
             color: getCategoryColor(frontMatter.category || '技术教程'),
           },
-          tags: (frontMatter.tags || ['博客']).map((tag: string, index: number) => ({
+          tags: (frontMatter.tags || ['博客']).map((tag: string) => ({
             id: `tag-${generateId(tag)}`,
             name: tag,
             slug: generateId(tag),
