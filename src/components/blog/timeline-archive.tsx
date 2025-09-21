@@ -76,23 +76,23 @@ export function TimelineArchive({ articles, className }: TimelineArchiveProps) {
         
         return (
           <div key={year} className="relative">
-            {/* 年份标题 - 桌面端在左侧，移动端在右侧 */}
+            {/* 年份标题 - 响应式布局 */}
             <div className="relative">
-              {/* 桌面端年份圆圈 - 左侧 */}
-              <div className="absolute -left-[60px] top-0 z-10 hidden md:block">
+              {/* 桌面端：年份圆圈在左侧 */}
+              <div className="hidden md:block absolute -left-[60px] top-0 z-10">
                 <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg">
                   {year}
                 </div>
               </div>
               
-              {/* 移动端年份圆圈 - 右侧 */}
-              <div className="absolute -right-[30px] top-0 z-10 md:hidden">
-                <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-base">
+              {/* 移动端：年份圆圈在右侧 */}
+              <div className="md:hidden absolute -right-4 top-0 z-10">
+                <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
                   {year}
                 </div>
               </div>
               
-              <div className="sticky top-0 z-10 py-2">
+              <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-2">
                 <div className="flex items-center">
                   <div className="w-6 h-[2px] bg-primary"></div>
                   <Badge variant="outline" className="ml-2 text-sm">
@@ -102,42 +102,42 @@ export function TimelineArchive({ articles, className }: TimelineArchiveProps) {
               </div>
             </div>
             
-            {/* 时间线 */}
-            <div className="relative ml-6 pl-8 border-l-2 border-dashed border-muted-foreground/30">
+            {/* 时间线 - 响应式间距 */}
+            <div className="relative ml-3 md:ml-6 pl-4 md:pl-8 border-l-2 border-dashed border-muted-foreground/30">
               {sortedMonths.map(monthKey => {
                 const monthData = yearData.months[monthKey]
                 const monthName = format(new Date(`${year}-${monthKey}-01`), 'MMMM')
                 
                 return (
                   <div key={`${year}-${monthKey}`} className="mb-8 relative">
-                    {/* 月份标记点 - 响应式调整 */}
-                    <div className="absolute -left-[41px] w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium">
+                    {/* 月份标记点 - 响应式定位 */}
+                    <div className="absolute -left-[25px] md:-left-[41px] w-6 h-6 md:w-8 md:h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs md:text-sm font-medium">
                       {monthKey}
                     </div>
                     
-                    {/* 月份标题 */}
-                    <h3 className="text-xl font-semibold mb-4 text-foreground">
+                    {/* 月份标题 - 响应式字体大小 */}
+                    <h3 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-foreground">
                       {monthName}
                     </h3>
                     
                     {/* 文章列表 - 简化版 */}
-                    <div className="space-y-3">
+                    <div className="space-y-2 md:space-y-3">
                       {monthData.articles.map(article => {
                         const publishDate = new Date(article.publishedAt)
                         const day = format(publishDate, 'dd')
                         
                         return (
                           <div key={article.id} className="relative group">
-                            {/* 日期标记点 - 响应式调整 */}
-                            <div className="absolute -left-[33px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-muted border border-border flex items-center justify-center text-xs text-muted-foreground">
+                            {/* 日期标记点 - 响应式定位和大小 */}
+                            <div className="absolute -left-[21px] md:-left-[33px] top-1/2 -translate-y-1/2 w-4 h-4 md:w-6 md:h-6 rounded-full bg-muted border border-border flex items-center justify-center text-xs text-muted-foreground">
                               {day}
                             </div>
                             
-                            {/* 简化的文章展示 - 只显示标题 */}
-                            <div className="py-2 pl-1 hover:bg-accent/20 rounded-md transition-colors">
+                            {/* 简化的文章展示 - 只显示标题，响应式间距 */}
+                            <div className="py-1.5 md:py-2 pl-1 hover:bg-accent/20 rounded-md transition-colors">
                               <Link 
                                 to={`/article/${article.id}`}
-                                className="text-sm font-medium hover:text-primary transition-colors block"
+                                className="text-sm font-medium hover:text-primary transition-colors block leading-relaxed"
                               >
                                 {article.title}
                               </Link>
