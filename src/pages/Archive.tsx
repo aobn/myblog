@@ -1,17 +1,19 @@
 /**
  * 归档页面组件
  * 
- * @author CodeBuddy
- * @date 2025-09-18
+ * @author xxh
+ * @date 2025-09-21
  */
 
 import * as React from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Calendar, Archive as ArchiveIcon, ChevronDown, ChevronRight } from 'lucide-react'
+import { Calendar, Archive as ArchiveIcon, ChevronDown, ChevronRight, List, Clock } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { TimelineArchive } from '@/components/blog/timeline-archive'
 import type { Article } from '@/types/blog'
 import { loadAllPosts } from '@/lib/simple-post-loader'
 
@@ -23,6 +25,9 @@ interface ArchiveMonth {
   articles: Article[]
   count: number
 }
+
+// 视图类型
+type ViewType = 'list' | 'timeline'
 
 // 处理归档数据
 const processArchiveData = (articles: Article[]): ArchiveMonth[] => {
@@ -73,6 +78,7 @@ export default function Archive() {
   const [articles, setArticles] = React.useState<Article[]>([])
   const [loading, setLoading] = React.useState(true)
   const [openMonths, setOpenMonths] = React.useState<Set<string>>(new Set())
+  const [viewType, setViewType] = React.useState<ViewType>('timeline')
 
   // 加载文章数据
   React.useEffect(() => {
@@ -121,6 +127,13 @@ export default function Archive() {
   // 统计总数
   const totalArticles = archiveData.reduce((sum, archive) => sum + archive.count, 0)
   const totalMonths = archiveData.length
+
+  // 切换视图类型
+  const handleViewChange = (value: string) => {
+    if (value) {
+      setViewType(value as ViewType)
+    }
+  }
 
   if (loading) {
     return (
@@ -183,70 +196,101 @@ export default function Archive() {
             </div>
           )}
 
-          {/* 归档列表 */}
-          <div className="space-y-4">
-            {filteredData.map((archive) => (
-              <Card key={archive.monthName}>
-                <Collapsible
-                  open={openMonths.has(archive.monthName)}
-                  onOpenChange={() => toggleMonth(archive.monthName)}
-                >
-                  <CollapsibleTrigger asChild>
-                    <CardHeader className="cursor-pointer hover:bg-accent/50 transition-colors">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Calendar className="h-5 w-5 text-primary" />
-                          <CardTitle className="text-xl">{archive.monthName}</CardTitle>
-                          <Badge variant="secondary">{archive.count} 篇</Badge>
+          {/* 视图切换 */}
+          <div className="flex justify-center">
+            <ToggleGroup type="single" value={viewType} onValueChange={handleViewChange}>
+              <ToggleGroupItem 
+                value="timeline" 
+                aria-label="时间线视图"
+                className="hover:scale-110 hover:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none active:scale-125 active:bg-transparent data-[state=on]:bg-transparent data-[state=on]:text-current transition-transform duration-200 active:duration-100"
+              >
+                <Clock className="h-4 w-4 mr-2" />
+                时间线视图
+              </ToggleGroupItem>
+              <ToggleGroupItem 
+                value="list" 
+                aria-label="列表视图"
+                className="hover:scale-110 hover:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none active:scale-125 active:bg-transparent data-[state=on]:bg-transparent data-[state=on]:text-current transition-transform duration-200 active:duration-100"
+              >
+                <List className="h-4 w-4 mr-2" />
+                列表视图
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </div>
+
+          {/* 列表视图 */}
+          {viewType === 'list' && (
+            <div className="space-y-4">
+              {filteredData.map((archive) => (
+                <Card key={archive.monthName}>
+                  <Collapsible
+                    open={openMonths.has(archive.monthName)}
+                    onOpenChange={() => toggleMonth(archive.monthName)}
+                  >
+                    <CollapsibleTrigger asChild>
+                      <CardHeader className="cursor-pointer hover:bg-accent/50 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Calendar className="h-5 w-5 text-primary" />
+                            <CardTitle className="text-xl">{archive.monthName}</CardTitle>
+                            <Badge variant="secondary">{archive.count} 篇</Badge>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {!month && (
+                              <Link to={`/archive/${archive.monthName}`}>
+                                <Button variant="ghost" size="sm" onClick={(e) => e.stopPropagation()}>
+                                  查看全部
+                                </Button>
+                              </Link>
+                            )}
+                            {openMonths.has(archive.monthName) ? (
+                              <ChevronDown className="h-4 w-4" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4" />
+                            )}
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          {!month && (
-                            <Link to={`/archive/${archive.monthName}`}>
-                              <Button variant="ghost" size="sm" onClick={(e) => e.stopPropagation()}>
-                                查看全部
-                              </Button>
-                            </Link>
-                          )}
-                          {openMonths.has(archive.monthName) ? (
-                            <ChevronDown className="h-4 w-4" />
-                          ) : (
-                            <ChevronRight className="h-4 w-4" />
-                          )}
-                        </div>
-                      </div>
-                    </CardHeader>
-                  </CollapsibleTrigger>
-                  
-                  <CollapsibleContent>
-                    <CardContent className="pt-0">
-                      <div className="space-y-3">
-                        {archive.articles.map((article) => (
-                          <Link
-                            key={article.id}
-                            to={`/article/${article.id}`}
-                            className="block p-4 rounded-lg border hover:bg-accent/50 transition-colors group"
-                          >
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex-1 min-w-0">
-                                <h3 className="font-medium group-hover:text-primary transition-colors line-clamp-1">
-                                  {article.title}
-                                </h3>
-                                <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                                  <span>{formatDate(article.publishedAt)}</span>
-                                  {article.readTime && <span>{article.readTime} 分钟阅读</span>}
-                                  {article.viewCount && <span>{article.viewCount} 次阅读</span>}
+                      </CardHeader>
+                    </CollapsibleTrigger>
+                    
+                    <CollapsibleContent>
+                      <CardContent className="pt-0">
+                        <div className="space-y-3">
+                          {archive.articles.map((article) => (
+                            <Link
+                              key={article.id}
+                              to={`/article/${article.id}`}
+                              className="block p-4 rounded-lg border hover:bg-accent/50 transition-colors group"
+                            >
+                              <div className="flex items-start justify-between gap-4">
+                                <div className="flex-1 min-w-0">
+                                  <h3 className="font-medium group-hover:text-primary transition-colors line-clamp-1">
+                                    {article.title}
+                                  </h3>
+                                  <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                                    <span>{formatDate(article.publishedAt)}</span>
+                                    {article.readTime && <span>{article.readTime} 分钟阅读</span>}
+                                    {article.viewCount && <span>{article.viewCount} 次阅读</span>}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </CollapsibleContent>
-                </Collapsible>
-              </Card>
-            ))}
-          </div>
+                            </Link>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {/* 时间线视图 */}
+          {viewType === 'timeline' && (
+            <div className="mt-8">
+              <TimelineArchive articles={articles} />
+            </div>
+          )}
 
           {/* 返回按钮 */}
           {month && (

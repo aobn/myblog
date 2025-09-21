@@ -26,6 +26,7 @@ const navigationItems = [
   { name: '文章', href: '/articles' },
   { name: '分类', href: '/categories' },
   { name: '标签', href: '/tags' },
+  { name: '归档', href: '/archive' },
   { name: '关于', href: '/about' },
 ]
 
@@ -34,6 +35,31 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
   const { searchQuery, setSearchQuery } = useBlogStore()
   const [isSearchOpen, setIsSearchOpen] = React.useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
+
+  // 监听页面滚动，自动关闭移动端菜单
+  React.useEffect(() => {
+    let timeoutId: NodeJS.Timeout
+
+    const handleScroll = () => {
+      if (isMobileMenuOpen) {
+        setIsMobileMenuOpen(false)
+      }
+    }
+
+    if (isMobileMenuOpen) {
+      // 延迟添加滚动监听器，避免菜单打开时立即触发
+      timeoutId = setTimeout(() => {
+        window.addEventListener('scroll', handleScroll, { passive: true })
+      }, 100)
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [isMobileMenuOpen])
 
   // 检查当前路径是否激活
   const isActiveLink = (href: string, exact = false) => {
@@ -73,8 +99,8 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
                     <Link
                       to={item.href}
                       className={cn(
-                        "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 focus:shadow-md focus:-translate-y-0.5 focus:outline-none disabled:pointer-events-none disabled:opacity-50",
-                        isActiveLink(item.href, item.exact) && "font-bold shadow-md -translate-y-0.5"
+                        "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-transform duration-200 hover:scale-110 hover:bg-transparent active:scale-125 active:bg-transparent active:duration-100 focus:outline-none focus:bg-transparent bg-transparent disabled:pointer-events-none disabled:opacity-50",
+                        isActiveLink(item.href, item.exact) && "font-bold bg-transparent"
                       )}
                     >
                       {item.name}
@@ -108,7 +134,7 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
                     size="sm"
                     onClick={() => setIsSearchOpen(false)}
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-4 w-4 text-black" />
                   </Button>
                 </form>
               ) : (
@@ -151,44 +177,24 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
 
         {/* 移动端下拉菜单 */}
         {isMobileMenuOpen && (
-          <div className="md:hidden animate-in slide-in-from-top-2 duration-200 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="container mx-auto px-4 py-4 space-y-4">
-              {/* 移动端搜索 */}
-              <form onSubmit={handleSearch} className="flex space-x-2">
-                <Input
-                  type="search"
-                  placeholder="搜索文章..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1"
-                />
-                <Button type="submit" size="sm">
-                  搜索
-                </Button>
-              </form>
-
-              {/* 移动端导航菜单 */}
-              <nav className="grid grid-cols-2 gap-2">
+          <div className="md:hidden animate-in slide-in-from-top-2 duration-200">
+            <div className="container mx-auto px-4 py-4">
+              {/* 移动端导航菜单和主题切换 */}
+              <nav className="flex flex-wrap justify-center gap-1">
                 {navigationItems.map((item) => (
                   <Link
                     key={item.href}
                     to={item.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
                     className={cn(
-                      "flex items-center justify-center rounded-md px-3 py-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors",
-                      isActiveLink(item.href, item.exact) && "bg-accent text-accent-foreground"
+                      "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-transform duration-200 hover:scale-110 hover:bg-transparent active:scale-125 active:bg-transparent active:duration-100 focus:outline-none focus:bg-transparent bg-transparent disabled:pointer-events-none disabled:opacity-50",
+                      isActiveLink(item.href, item.exact) && "font-bold bg-transparent"
                     )}
                   >
                     {item.name}
                   </Link>
                 ))}
-              </nav>
-
-              {/* 移动端主题切换 */}
-              <div className="flex items-center justify-between pt-2 border-t">
-                <span className="text-sm font-medium">主题设置</span>
                 <ThemeToggle />
-              </div>
+              </nav>
             </div>
           </div>
         )}
@@ -203,7 +209,7 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
                   placeholder="搜索文章..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1"
+                  className="flex-1 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                   autoFocus
                 />
                 <Button type="submit" size="sm">

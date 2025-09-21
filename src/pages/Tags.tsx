@@ -123,20 +123,26 @@ export default function Tags() {
 
         {/* 视图切换 */}
         <div className="flex justify-center mb-8">
-          <div className="flex items-center border rounded-md">
+          <div className="flex items-center">
             <Button
-              variant={viewMode === 'cloud' ? 'default' : 'ghost'}
+              variant="ghost"
               size="sm"
               onClick={() => setViewMode('cloud')}
-              className="rounded-r-none"
+              className={cn(
+                "transition-all duration-200 hover:bg-transparent focus:bg-transparent active:scale-125 active:bg-transparent active:duration-100",
+                viewMode === 'cloud' && "font-bold text-primary"
+              )}
             >
               标签云
             </Button>
             <Button
-              variant={viewMode === 'list' ? 'default' : 'ghost'}
+              variant="ghost"
               size="sm"
               onClick={() => setViewMode('list')}
-              className="rounded-l-none"
+              className={cn(
+                "transition-all duration-200 hover:bg-transparent focus:bg-transparent active:scale-125 active:bg-transparent active:duration-100",
+                viewMode === 'list' && "font-bold text-primary"
+              )}
             >
               列表视图
             </Button>
