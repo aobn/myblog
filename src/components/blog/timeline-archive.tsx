@@ -92,7 +92,7 @@ export function TimelineArchive({ articles, className }: TimelineArchiveProps) {
                 </div>
               </div>
               
-              <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-2">
+              <div className="sticky top-0 z-10 py-2">
                 <div className="flex items-center">
                   <div className="w-6 h-[2px] bg-primary"></div>
                   <Badge variant="outline" className="ml-2 text-sm">
