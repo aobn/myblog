@@ -75,12 +75,12 @@ export function TimelineArchive({ articles, className }: TimelineArchiveProps) {
         const sortedMonths = Object.keys(yearData.months).sort((a, b) => parseInt(b) - parseInt(a))
         
         return (
-          <div key={year} className="relative">
+          <div key={year} className="relative pl-0 md:pl-16">
             {/* 年份标题 - 全新设计 */}
             <div className="relative mb-6">
               {/* 桌面端：年份圆圈在左侧 */}
-              <div className="hidden md:block absolute -left-[60px] top-0 z-10">
-                <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg shadow-lg">
+              <div className="hidden md:block absolute -left-16 top-0 z-10">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-lg shadow-xl border-4 border-background">
                   {year}
                 </div>
               </div>
@@ -112,50 +112,70 @@ export function TimelineArchive({ articles, className }: TimelineArchiveProps) {
             </div>
             
             {/* 时间线 - 优化布局 */}
-            <div className="relative ml-0 md:ml-6 pl-6 md:pl-8 border-l-2 border-dashed border-muted-foreground/30">
+            <div className="relative ml-0 md:ml-2 pl-20 md:pl-24 border-l-2 border-dashed border-muted-foreground/30">
               {sortedMonths.map(monthKey => {
                 const monthData = yearData.months[monthKey]
                 const monthName = format(new Date(`${year}-${monthKey}-01`), 'MMMM')
                 
                 return (
                   <div key={`${year}-${monthKey}`} className="mb-8 relative">
-                    {/* 月份标记点 - 优化设计 */}
-                    <div className="absolute -left-[31px] md:-left-[41px] w-8 h-8 md:w-8 md:h-8 rounded-full bg-primary/90 flex items-center justify-center text-primary-foreground text-xs md:text-sm font-medium shadow-md border-2 border-background">
-                      {monthKey}
-                    </div>
-                    
-                    {/* 月份标题 - 优化样式 */}
-                    <div className="flex items-center gap-3 mb-4">
-                      <h3 className="text-lg md:text-xl font-semibold text-foreground">
-                        {monthName}
-                      </h3>
-                      <div className="hidden md:block flex-1 h-px bg-border"></div>
-                      <Badge variant="secondary" className="text-xs md:hidden">
-                        {monthData.articles.length} 篇
-                      </Badge>
+                    {/* 月份标题 - 简化设计 */}
+                    <div className="mb-3 -ml-20 md:-ml-24">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground text-xs md:text-sm font-medium shadow-lg border-2 border-background">
+                          {monthKey}
+                        </div>
+                        <h3 className="text-lg md:text-xl font-semibold text-foreground">
+                          {monthName}
+                        </h3>
+                        <div className="hidden md:block flex-1 h-px bg-border ml-3"></div>
+                        <Badge variant="secondary" className="text-xs">
+                          {monthData.articles.length} 篇
+                        </Badge>
+                      </div>
                     </div>
                     
                     {/* 文章列表 - 优化设计 */}
-                    <div className="space-y-1 md:space-y-2">
+                    <div className="space-y-0.5 md:space-y-1">
                       {monthData.articles.map(article => {
                         const publishDate = new Date(article.publishedAt)
                         const day = format(publishDate, 'dd')
                         
                         return (
-                          <div key={article.id} className="relative group">
-                            {/* 日期标记点 - 精致设计 */}
-                            <div className="absolute -left-[27px] md:-left-[33px] top-1/2 -translate-y-1/2 w-6 h-6 md:w-6 md:h-6 rounded-full bg-background border-2 border-primary/30 flex items-center justify-center text-xs text-muted-foreground font-medium shadow-sm group-hover:border-primary/60 group-hover:bg-primary/5 transition-all duration-200">
-                              {day}
+                          <div key={article.id} className="relative group py-1">
+                            {/* 左侧：月份.日期 */}
+                            <div className="absolute -left-[80px] md:-left-[90px] top-1/2 -translate-y-1/2 text-right">
+                              <div className="text-sm md:text-base font-medium text-muted-foreground group-hover:text-primary transition-colors">
+                                {monthKey}.{day}
+                              </div>
                             </div>
                             
-                            {/* 文章展示 - 卡片化设计 */}
-                            <div className="py-2 md:py-2.5 pl-2 pr-3 hover:bg-accent/30 rounded-lg transition-all duration-200 group-hover:shadow-sm border border-transparent hover:border-border/50">
-                              <Link 
-                                to={`/article/${article.id}`}
-                                className="text-sm md:text-base font-medium hover:text-primary transition-colors block leading-relaxed group-hover:translate-x-1 transition-transform duration-200"
-                              >
-                                {article.title}
-                              </Link>
+                            {/* 虚线连接点 */}
+                            <div className="absolute -left-[6px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-primary/20 border-2 border-primary/40 group-hover:bg-primary/40 group-hover:border-primary/60 transition-all duration-200"></div>
+                            
+                            {/* 右侧：文章标题和标签 */}
+                            <div className="pl-4 pr-3">
+                              <div className="flex items-center justify-between group-hover:translate-x-1 transition-transform duration-200">
+                                <Link 
+                                  to={`/article/${article.id}`}
+                                  className="text-base font-medium hover:text-primary transition-colors flex-1 mr-4"
+                                >
+                                  {article.title}
+                                </Link>
+                                {article.tags && article.tags.length > 0 && (
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {article.tags.map(tag => (
+                                      <Badge 
+                                        key={tag.id} 
+                                        variant="secondary" 
+                                        className="text-xs px-2 py-0.5"
+                                      >
+                                        {tag.name}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
                         )
