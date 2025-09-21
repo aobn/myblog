@@ -153,6 +153,7 @@ export async function loadAllPosts(): Promise<Article[]> {
         const article: Article = {
           id: generateId(frontMatter.title || fileName),
           title: frontMatter.title || fileName,
+          slug: frontMatter.slug || generateId(frontMatter.title || fileName),
           content: markdownContent,
           excerpt: frontMatter.excerpt || generateExcerpt(markdownContent),
           author: {

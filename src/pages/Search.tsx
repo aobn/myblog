@@ -1,48 +1,29 @@
 /**
  * 搜索页面组件
  * 
- * @author CodeBuddy
- * @date 2025-09-18
+ * @author xxh
+ * @date 2025-09-21
  */
 
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Search as SearchIcon } from 'lucide-react'
+import { Search as SearchIcon, Clock, TrendingUp, Calendar } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ArticleCard } from '@/components/blog/article-card'
+import { Badge } from '@/components/ui/badge'
 import { useBlogStore } from '@/store/blog-store'
-import type { Article } from '@/types/blog'
-
-// 模拟搜索结果
-const mockSearchResults: Article[] = [
-  {
-    id: '1',
-    title: 'React 19 新特性深度解析',
-    excerpt: '深入探讨 React 19 带来的并发渲染机制、Suspense 边界优化',
-    publishedAt: '2025-09-15T10:00:00Z',
-    readTime: 12,
-    viewCount: 1250,
-    likeCount: 89,
-  } as Article,
-  {
-    id: '2',
-    title: 'TypeScript 5.0 实战指南',
-    excerpt: '全面解析 TypeScript 5.0 的新特性，包括装饰器、const 断言',
-    publishedAt: '2025-09-12T14:30:00Z',
-    readTime: 15,
-    viewCount: 980,
-    likeCount: 67,
-  } as Article,
-]
+import { searchArticles, type SearchResult, type SearchResultArticle } from '@/lib/search-service'
+import { highlightText } from '@/lib/highlight-utils'
 
 export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { searchQuery, setSearchQuery } = useBlogStore()
   const [sortBy, setSortBy] = React.useState<'relevance' | 'date' | 'popularity'>('relevance')
-  const [filterBy, setFilterBy] = React.useState<'all' | 'articles' | 'categories' | 'tags'>('all')
+  const [filterBy, setFilterBy] = React.useState<'all' | 'title' | 'content' | 'tags' | 'category'>('all')
+  const [searchResult, setSearchResult] = React.useState<SearchResult | null>(null)
+  const [isLoading, setIsLoading] = React.useState(false)
   
   const query = searchParams.get('q') || ''
   
@@ -51,6 +32,37 @@ export default function Search() {
       setSearchQuery(query)
     }
   }, [query, setSearchQuery])
+
+  // 执行搜索
+  const performSearch = React.useCallback(async (searchQuery: string) => {
+    if (!searchQuery.trim()) {
+      setSearchResult(null)
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      const result = await searchArticles({
+        query: searchQuery,
+        sortBy,
+        filterBy,
+        limit: 20
+      })
+      setSearchResult(result)
+    } catch (error) {
+      console.error('Search failed:', error)
+      setSearchResult(null)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [sortBy, filterBy])
+
+  // 当查询参数或排序/筛选条件变化时执行搜索
+  React.useEffect(() => {
+    if (query) {
+      performSearch(query)
+    }
+  }, [query, performSearch])
 
   // 处理搜索
   const handleSearch = (e: React.FormEvent) => {
@@ -64,6 +76,17 @@ export default function Search() {
   const handleClearSearch = () => {
     setSearchQuery('')
     setSearchParams({})
+    setSearchResult(null)
+  }
+
+  // 处理排序变化
+  const handleSortChange = (value: string) => {
+    setSortBy(value as 'relevance' | 'date' | 'popularity')
+  }
+
+  // 处理筛选变化
+  const handleFilterChange = (value: string) => {
+    setFilterBy(value as 'all' | 'title' | 'content' | 'tags' | 'category')
   }
 
   return (
@@ -102,26 +125,42 @@ export default function Search() {
 
                 {/* 筛选选项 */}
                 <div className="flex flex-wrap gap-4">
-                  <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+                  <Select value={sortBy} onValueChange={handleSortChange}>
                     <SelectTrigger className="w-32">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="relevance">相关性</SelectItem>
-                      <SelectItem value="date">发布时间</SelectItem>
-                      <SelectItem value="popularity">热门程度</SelectItem>
+                      <SelectItem value="relevance">
+                        <div className="flex items-center">
+                          <SearchIcon className="h-4 w-4 mr-2" />
+                          相关性
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="date">
+                        <div className="flex items-center">
+                          <Calendar className="h-4 w-4 mr-2" />
+                          发布时间
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="popularity">
+                        <div className="flex items-center">
+                          <TrendingUp className="h-4 w-4 mr-2" />
+                          热门程度
+                        </div>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
 
-                  <Select value={filterBy} onValueChange={(value: any) => setFilterBy(value)}>
+                  <Select value={filterBy} onValueChange={handleFilterChange}>
                     <SelectTrigger className="w-32">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">全部</SelectItem>
-                      <SelectItem value="articles">文章</SelectItem>
-                      <SelectItem value="categories">分类</SelectItem>
+                      <SelectItem value="title">标题</SelectItem>
+                      <SelectItem value="content">内容</SelectItem>
                       <SelectItem value="tags">标签</SelectItem>
+                      <SelectItem value="category">分类</SelectItem>
                     </SelectContent>
                   </Select>
 
@@ -138,27 +177,124 @@ export default function Search() {
           {/* 搜索结果 */}
           {query ? (
             <div className="space-y-6">
-              {/* 结果统计 */}
-              <div className="flex items-center justify-between">
-                <div className="text-muted-foreground">
-                  搜索 "<span className="font-medium text-foreground">{query}</span>" 
-                  找到 <span className="font-medium text-foreground">{mockSearchResults.length}</span> 个结果
+              {/* 加载状态 */}
+              {isLoading && (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">搜索中...</p>
                 </div>
-              </div>
+              )}
+
+              {/* 结果统计 */}
+              {!isLoading && searchResult && (
+                <div className="flex items-center justify-between">
+                  <div className="text-muted-foreground">
+                    搜索 "<span className="font-medium text-foreground">{query}</span>" 
+                    找到 <span className="font-medium text-foreground">{searchResult.total}</span> 个结果
+                    <Badge variant="outline" className="ml-2">
+                      <Clock className="h-3 w-3 mr-1" />
+                      {searchResult.searchTime}ms
+                    </Badge>
+                  </div>
+                </div>
+              )}
 
               {/* 搜索结果列表 */}
-              <div className="space-y-4">
-                {mockSearchResults.map((article) => (
-                  <ArticleCard
-                    key={article.id}
-                    article={article}
-                    variant="compact"
-                  />
-                ))}
-              </div>
+              {!isLoading && searchResult && searchResult.articles.length > 0 && (
+                <div className="space-y-4">
+                  {searchResult.articles.map((article: SearchResultArticle) => (
+                    <Card key={article.id} className="p-0 cursor-pointer relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-primary/50">
+                      <div className="flex flex-col sm:flex-row gap-4 p-4">
+                        <div className="flex-1 space-y-3 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Badge 
+                              variant="secondary" 
+                              style={{ 
+                                backgroundColor: `${article.category.color}20`, 
+                                color: article.category.color 
+                              }}
+                            >
+                              {article.category.name}
+                            </Badge>
+                            {article.tags
+                              .filter((tag) => {
+                                const keywords = query.toLowerCase().split(' ').filter(k => k.trim())
+                                return keywords.some(keyword => 
+                                  tag.name.toLowerCase().includes(keyword)
+                                )
+                              })
+                              .slice(0, 3)
+                              .map((tag) => (
+                                <Badge key={tag.id} variant="outline" className="text-xs">
+                                  {highlightText(tag.name, query)}
+                                </Badge>
+                              ))}
+                            {article.relevanceScore && (
+                              <Badge variant="outline" className="text-xs">
+                                匹配度: {Math.round(article.relevanceScore)}
+                              </Badge>
+                            )}
+                          </div>
+                          <a 
+                            className="group" 
+                            href={`/article/${article.id}`}
+                            onClick={(e) => {
+                              e.preventDefault()
+                              window.location.href = `/article/${article.id}`
+                            }}
+                          >
+                            <h3 className="font-semibold group-hover:text-primary transition-colors text-base">
+                              {highlightText(article.title, query)}
+                            </h3>
+                          </a>
+                          
+                          {/* 文章摘要 */}
+                          <p className="text-sm text-muted-foreground line-clamp-2">
+                            {highlightText(article.excerpt, query)}
+                          </p>
+                          
+                          {/* 上下文片段 */}
+                          {article.contextSnippets && article.contextSnippets.length > 0 && (
+                            <div className="space-y-2">
+                              <div className="text-xs font-medium text-muted-foreground">相关内容片段:</div>
+                              {article.contextSnippets.map((snippet, index) => (
+                                <div key={index} className="bg-muted/50 rounded-md p-2 text-sm">
+                                  <span className="text-muted-foreground">
+                                    {highlightText(snippet, query)}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          
+                          <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              <span>{new Date(article.publishedAt).toLocaleDateString('zh-CN')}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              <span>{article.readTime} 分钟阅读</span>
+                            </div>
+                          </div>
+                        </div>
+                        {article.coverImage && (
+                          <div className="relative w-full sm:w-32 md:w-40 h-32 sm:h-24 md:h-full flex-shrink-0">
+                            <img 
+                              alt={article.title}
+                              className="w-full h-full object-cover rounded-lg transition-transform duration-300 hover:scale-105"
+                              src={article.coverImage}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
 
               {/* 无结果提示 */}
-              {mockSearchResults.length === 0 && (
+              {!isLoading && searchResult && searchResult.articles.length === 0 && (
                 <Card>
                   <CardContent className="pt-8 pb-8 text-center">
                     <SearchIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />

@@ -9,9 +9,7 @@ import * as React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Search, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from '@/components/ui/navigation-menu'
-import { useBlogStore } from '@/store/blog-store'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { cn } from '@/lib/utils'
 
@@ -32,8 +30,6 @@ const navigationItems = [
 
 export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps) {
   const location = useLocation()
-  const { searchQuery, setSearchQuery } = useBlogStore()
-  const [isSearchOpen, setIsSearchOpen] = React.useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
   // 监听页面滚动，自动关闭移动端菜单
@@ -69,14 +65,7 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
     return location.pathname.startsWith(href)
   }
 
-  // 处理搜索
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      // TODO: 实现搜索逻辑
-      console.log('搜索:', searchQuery)
-    }
-  }
+
 
   return (
     <header className={cn("sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60", className)}>
@@ -113,54 +102,20 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
 
           {/* 搜索和移动端菜单 */}
           <div className="flex items-center space-x-2">
-            {/* 搜索框 */}
-            <div className="hidden sm:block">
-              {isSearchOpen ? (
-                <form onSubmit={handleSearch} className="flex items-center space-x-2">
-                  <Input
-                    type="search"
-                    placeholder="搜索文章..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-64"
-                    autoFocus
-                  />
-                  <Button type="submit" size="sm">
-                    搜索
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsSearchOpen(false)}
-                  >
-                    <X className="h-4 w-4 text-black" />
-                  </Button>
-                </form>
-              ) : (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsSearchOpen(true)}
-                >
-                  <Search className="h-4 w-4" />
-                  <span className="sr-only">搜索</span>
-                </Button>
-              )}
-            </div>
-
-            {/* 主题切换按钮 */}
-            <ThemeToggle />
-
-            {/* 移动端搜索按钮 */}
+            {/* 搜索按钮 - 直接跳转到搜索页面 */}
             <Button
               variant="ghost"
               size="sm"
-              className="sm:hidden"
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              asChild
             >
-              <Search className="h-4 w-4" />
+              <Link to="/search">
+                <Search className="h-4 w-4" />
+                <span className="sr-only">搜索</span>
+              </Link>
             </Button>
+
+            {/* 主题切换按钮 */}
+            <ThemeToggle />
 
             {/* 移动端菜单按钮 */}
             <Button 
@@ -199,26 +154,7 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
           </div>
         )}
 
-        {/* 移动端搜索框（独立显示） */}
-        {isSearchOpen && (
-          <div className="sm:hidden animate-in slide-in-from-top-2 duration-200 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pb-4">
-            <div className="container mx-auto px-4 pt-4">
-              <form onSubmit={handleSearch} className="flex space-x-2">
-                <Input
-                  type="search"
-                  placeholder="搜索文章..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                  autoFocus
-                />
-                <Button type="submit" size="sm">
-                  搜索
-                </Button>
-              </form>
-            </div>
-          </div>
-        )}
+
       </div>
     </header>
   )
