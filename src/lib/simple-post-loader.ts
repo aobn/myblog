@@ -185,6 +185,7 @@ export async function loadAllPosts(): Promise<Article[]> {
           likeCount: frontMatter.likeCount || 0,
           coverImage: frontMatter.coverImage,
           isPublished: frontMatter.isPublished !== false,
+          pinned: frontMatter.pinned === true,  // 置顶标识
         }
         
         articles.push(article)
@@ -193,8 +194,15 @@ export async function loadAllPosts(): Promise<Article[]> {
       }
     }
     
-    // 按发布日期排序（最新的在前）
-    return articles.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+    // 按置顶状态和发布日期排序（置顶文章在前，然后按最新时间排序）
+    return articles.sort((a, b) => {
+      // 首先按置顶状态排序
+      if (a.pinned && !b.pinned) return -1
+      if (!a.pinned && b.pinned) return 1
+      
+      // 然后按发布时间排序
+      return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+    })
   } catch (error) {
     console.error('Error loading posts:', error)
     return []

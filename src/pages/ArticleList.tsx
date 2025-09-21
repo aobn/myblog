@@ -6,7 +6,7 @@
  */
 
 import * as React from 'react'
-import { ChevronLeft, ChevronRight, Grid, List, Filter, MoreHorizontal } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Filter, MoreHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -15,7 +15,6 @@ import { ArticleCard } from '@/components/blog/article-card'
 import { useBlogStore } from '@/store/blog-store'
 import { loadAllPosts } from '@/lib/simple-post-loader'
 import type { Article } from '@/types/blog'
-import { cn } from '@/lib/utils'
 
 export function ArticleList() {
   const { 
@@ -30,7 +29,6 @@ export function ArticleList() {
     resetFilters 
   } = useBlogStore()
 
-  const [viewMode, setViewMode] = React.useState<'grid' | 'list'>('list')
   const [sortBy, setSortBy] = React.useState<'latest' | 'popular' | 'trending'>('latest')
   const [articles, setArticles] = React.useState<Article[]>([])
   const [loading, setLoading] = React.useState(true)
@@ -189,40 +187,17 @@ export function ArticleList() {
                     </SelectContent>
                   </Select>
 
-                  {/* 视图模式切换 */}
-                  <div className="flex items-center border rounded-md">
-                    <Button
-                      variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setViewMode('grid')}
-                      className="rounded-r-none"
-                    >
-                      <Grid className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant={viewMode === 'list' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setViewMode('list')}
-                      className="rounded-l-none"
-                    >
-                      <List className="h-4 w-4" />
-                    </Button>
-                  </div>
+
                 </div>
               </div>
 
-              {/* 文章网格/列表 */}
-              <div className={cn(
-                "gap-4",
-                viewMode === 'grid' 
-                  ? "grid grid-cols-1 md:grid-cols-2" 
-                  : "flex flex-col space-y-4"
-              )}>
+              {/* 文章列表 */}
+              <div className="flex flex-col space-y-4">
                 {paginatedArticles.map((article) => (
                   <ArticleCard
                     key={article.id}
                     article={article}
-                    variant={viewMode === 'list' ? 'compact' : 'default'}
+                    variant="compact"
                   />
                 ))}
               </div>

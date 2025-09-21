@@ -101,12 +101,12 @@ export default function Archive() {
   // 处理归档数据
   const archiveData = React.useMemo(() => processArchiveData(articles), [articles])
   
-  // 默认展开最新月份
-  React.useEffect(() => {
-    if (archiveData.length > 0 && openMonths.size === 0) {
-      setOpenMonths(new Set([archiveData[0].monthName]))
-    }
-  }, [archiveData, openMonths.size])
+  // 默认不展开任何月份
+  // React.useEffect(() => {
+  //   if (archiveData.length > 0 && openMonths.size === 0) {
+  //     setOpenMonths(new Set([archiveData[0].monthName]))
+  //   }
+  // }, [archiveData, openMonths.size])
 
   // 切换月份展开状态
   const toggleMonth = (monthName: string) => {
@@ -124,9 +124,9 @@ export default function Archive() {
     ? archiveData.filter(archive => archive.monthName === month)
     : archiveData
 
-  // 统计总数
-  const totalArticles = archiveData.reduce((sum, archive) => sum + archive.count, 0)
-  const totalMonths = archiveData.length
+  // 统计总数（暂时注释掉未使用的变量）
+  // const totalArticles = archiveData.reduce((sum, archive) => sum + archive.count, 0)
+  // const totalMonths = archiveData.length
 
   // 切换视图类型
   const handleViewChange = (value: string) => {
@@ -170,31 +170,7 @@ export default function Archive() {
             </p>
           </div>
 
-          {/* 统计信息 */}
-          {totalArticles > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card>
-                <CardContent className="pt-6 text-center">
-                  <div className="text-2xl font-bold text-primary">{totalArticles}</div>
-                  <div className="text-sm text-muted-foreground">篇文章</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-6 text-center">
-                  <div className="text-2xl font-bold text-primary">{totalMonths}</div>
-                  <div className="text-sm text-muted-foreground">个月份</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-6 text-center">
-                  <div className="text-2xl font-bold text-primary">
-                    {totalMonths > 0 ? Math.round(totalArticles / totalMonths) : 0}
-                  </div>
-                  <div className="text-sm text-muted-foreground">月均文章</div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+
 
           {/* 视图切换 */}
           <div className="flex justify-center">
@@ -236,13 +212,6 @@ export default function Archive() {
                             <Badge variant="secondary">{archive.count} 篇</Badge>
                           </div>
                           <div className="flex items-center gap-2">
-                            {!month && (
-                              <Link to={`/archive/${archive.monthName}`}>
-                                <Button variant="ghost" size="sm" onClick={(e) => e.stopPropagation()}>
-                                  查看全部
-                                </Button>
-                              </Link>
-                            )}
                             {openMonths.has(archive.monthName) ? (
                               <ChevronDown className="h-4 w-4" />
                             ) : (

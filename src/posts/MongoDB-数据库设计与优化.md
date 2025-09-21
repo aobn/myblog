@@ -9,6 +9,7 @@ updatedAt: "2025-09-21"
 readTime: 19
 coverImage: "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=800&h=400&fit=crop"
 isPublished: true
+pinned: true
 ---
 
 # MongoDB 数据库设计与优化

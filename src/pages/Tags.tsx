@@ -10,7 +10,6 @@ import { Link } from 'react-router-dom'
 import { Tag, Hash } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import type { Tag as TagType, Article } from '@/types/blog'
 import { cn } from '@/lib/utils'
 import { loadAllPosts } from '@/lib/simple-post-loader'
@@ -66,7 +65,6 @@ const getTagColor = (count: number) => {
 }
 
 export default function Tags() {
-  const [viewMode, setViewMode] = React.useState<'cloud' | 'list'>('cloud')
   const [tags, setTags] = React.useState<TagType[]>([])
   const [totalArticles, setTotalArticles] = React.useState(0)
   const [loading, setLoading] = React.useState(true)
@@ -121,84 +119,31 @@ export default function Tags() {
           </p>
         </div>
 
-        {/* 视图切换 */}
-        <div className="flex justify-center mb-8">
-          <div className="flex items-center">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setViewMode('cloud')}
-              className={cn(
-                "transition-all duration-200 hover:bg-transparent focus:bg-transparent active:scale-125 active:bg-transparent active:duration-100",
-                viewMode === 'cloud' && "font-bold text-primary"
-              )}
-            >
-              标签云
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setViewMode('list')}
-              className={cn(
-                "transition-all duration-200 hover:bg-transparent focus:bg-transparent active:scale-125 active:bg-transparent active:duration-100",
-                viewMode === 'list' && "font-bold text-primary"
-              )}
-            >
-              列表视图
-            </Button>
-          </div>
-        </div>
+
 
         {/* 标签云视图 */}
-        {viewMode === 'cloud' && (
-          <div className="mb-12">
-            <div className="flex flex-wrap items-center justify-center gap-4 min-h-64">
-              {sortedTags.map((tag) => (
-                <Link key={tag.id} to={`/tag/${tag.slug}`}>
-                  <Badge
-                    variant="secondary"
-                    className={cn(
-                      "cursor-pointer transition-all duration-300 hover:scale-110 hover:shadow-md px-4 py-2",
-                      getTagSize(tag.articleCount),
-                      getTagColor(tag.articleCount)
-                    )}
-                  >
-                    <Hash className="h-3 w-3 mr-1" />
-                    {tag.name}
-                    <span className="ml-2 text-xs opacity-80">
-                      {tag.articleCount}
-                    </span>
-                  </Badge>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* 列表视图 */}
-        {viewMode === 'list' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
+        <div className="mb-12">
+          <div className="flex flex-wrap items-center justify-center gap-4 min-h-64">
             {sortedTags.map((tag) => (
               <Link key={tag.id} to={`/tag/${tag.slug}`}>
-                <Card className="hover:shadow-md transition-all duration-300 cursor-pointer group">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Hash className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium group-hover:text-primary transition-colors">
-                          {tag.name}
-                        </span>
-                      </div>
-                      <Badge variant="secondary">
-                        {tag.articleCount}
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
+                <Badge
+                  variant="secondary"
+                  className={cn(
+                    "cursor-pointer transition-all duration-300 hover:scale-110 hover:shadow-md px-4 py-2",
+                    getTagSize(tag.articleCount),
+                    getTagColor(tag.articleCount)
+                  )}
+                >
+                  <Hash className="h-3 w-3 mr-1" />
+                  {tag.name}
+                  <span className="ml-2 text-xs opacity-80">
+                    {tag.articleCount}
+                  </span>
+                </Badge>
               </Link>
             ))}
           </div>
-        )}
+        </div>
 
         {/* 统计信息 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -22,6 +22,7 @@ export interface Article {
   likeCount: number
   coverImage?: string
   isPublished: boolean
+  pinned?: boolean  // 置顶标识
 }
 
 // 作者类型

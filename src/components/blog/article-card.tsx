@@ -57,6 +57,7 @@ export function ArticleCard({ article, variant = 'default', className }: Article
       )}
       onClick={handleCardClick}
     >
+
       {/* 响应式布局：大屏幕横向，小屏幕纵向 */}
       <div className="flex flex-col sm:flex-row gap-4 p-4">
         {/* 内容区域 */}
@@ -93,11 +94,9 @@ export function ArticleCard({ article, variant = 'default', className }: Article
           </Link>
 
           {/* 文章摘要 */}
-          {variant !== 'compact' && (
-            <p className="text-muted-foreground text-sm line-clamp-2">
-              {article.excerpt}
-            </p>
-          )}
+          <p className="text-muted-foreground text-sm line-clamp-2">
+            {article.excerpt}
+          </p>
 
           {/* 文章元信息 */}
           <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">

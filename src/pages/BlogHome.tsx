@@ -107,12 +107,22 @@ export function BlogHome() {
     return [...filteredArticles].sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
   }, [filteredArticles])
 
-  // 精选文章（如果是分类或标签页面，不显示精选文章）
+  // 置顶文章（如果是分类或标签页面，不显示置顶文章）
   const featuredArticles = React.useMemo(() => {
     if (currentCategory || currentTag) return []
-    return [...articles]
-      .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
-      .slice(0, 2)
+    
+    // 获取所有置顶文章
+    const pinnedArticles = articles.filter(article => article.pinned && article.isPublished)
+    
+    // 如果没有置顶文章，则显示最新的2篇
+    if (pinnedArticles.length === 0) {
+      return [...articles]
+        .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+        .slice(0, 2)
+    }
+    
+    // 返回置顶文章，最多显示2篇
+    return pinnedArticles.slice(0, 2)
   }, [articles, currentCategory, currentTag])
 
   // 普通文章列表
@@ -231,8 +241,8 @@ export function BlogHome() {
               <>
                 <section>
                   <div className="flex items-center gap-2 mb-6">
-                    <h2 className="text-2xl font-bold">精选文章</h2>
-                    <Badge variant="secondary">Featured</Badge>
+                    <h2 className="text-2xl font-bold">置顶</h2>
+                    <Badge variant="secondary">置顶</Badge>
                   </div>
                   
                   <div className="grid grid-cols-1 gap-4">

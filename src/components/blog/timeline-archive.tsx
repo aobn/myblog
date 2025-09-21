@@ -163,7 +163,7 @@ export function TimelineArchive({ articles, className }: TimelineArchiveProps) {
                                   {article.title}
                                 </Link>
                                 {article.tags && article.tags.length > 0 && (
-                                  <div className="flex flex-wrap gap-1.5">
+                                  <div className="hidden md:flex flex-wrap gap-1.5">
                                     {article.tags.map(tag => (
                                       <Badge 
                                         key={tag.id} 
