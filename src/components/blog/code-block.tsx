@@ -77,17 +77,18 @@ export function CodeBlock({ children, className, language }: CodeBlockProps) {
       <pre
         ref={codeRef}
         className={cn(
-          "rounded-lg p-4 overflow-x-auto text-sm font-mono",
+          "rounded-xl p-4 overflow-x-auto text-sm font-mono",
           "bg-zinc-950 text-zinc-100", // 使用固定的深色背景和浅色文字
           "pt-10", // 增加顶部内边距，为顶部工具栏留出空间
+          "border border-zinc-800", // 添加边框增强视觉效果
           className
         )}
       >
         {children}
       </pre>
       
-      {/* 顶部工具栏 - 使用相同的背景色 */}
-      <div className="absolute top-0 right-0 left-0 h-8 flex items-center justify-between px-4 bg-zinc-950 text-zinc-100">
+      {/* 顶部工具栏 - 使用相同的背景色和圆角 */}
+      <div className="absolute top-0 right-0 left-0 h-8 flex items-center justify-between px-4 bg-zinc-950 text-zinc-100 rounded-t-xl border-b border-zinc-800">
         {/* 语言标签 */}
         {language && (
           <div className="text-xs font-mono text-muted-foreground">
