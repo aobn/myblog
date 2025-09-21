@@ -124,37 +124,14 @@ export function TimelineArchive({ articles, className }: TimelineArchiveProps) {
                               {day}
                             </div>
                             
-                            {/* 简化的文章展示 - 标题和标签在同一行 */}
+                            {/* 简化的文章展示 - 只显示标题 */}
                             <div className="py-2 pl-1 hover:bg-accent/20 rounded-md transition-colors">
-                              <div className="flex items-center justify-between">
-                                {/* 文章标题 */}
-                                <Link 
-                                  to={`/article/${article.id}`}
-                                  className="text-sm font-medium hover:text-primary transition-colors truncate mr-2"
-                                >
-                                  {article.title}
-                                </Link>
-                                
-                                {/* 标签容器 - 右对齐 */}
-                                <div className="flex flex-wrap items-center gap-1 justify-end shrink-0">
-                                  <Badge 
-                                    variant="secondary"
-                                    style={{ 
-                                      backgroundColor: (article.category.color || '#6b7280') + '20', 
-                                      color: article.category.color || '#6b7280' 
-                                    }}
-                                    className="whitespace-nowrap"
-                                  >
-                                    {article.category.name}
-                                  </Badge>
-                                  
-                                  {article.tags.map(tag => (
-                                    <Badge key={tag.id} variant="outline" className="whitespace-nowrap">
-                                      {tag.name}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              </div>
+                              <Link 
+                                to={`/article/${article.id}`}
+                                className="text-sm font-medium hover:text-primary transition-colors block"
+                              >
+                                {article.title}
+                              </Link>
                             </div>
                           </div>
                         )
