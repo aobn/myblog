@@ -20,26 +20,49 @@ export function CodeBlock({ children, className, language }: CodeBlockProps) {
   const codeRef = React.useRef<HTMLPreElement>(null)
   const timerRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
-  const handleCopy = React.useCallback(() => {
+  const handleCopy = React.useCallback(async () => {
     if (!codeRef.current) return
     
     // 获取纯文本内容
     const codeText = codeRef.current.textContent || ''
     
-    // 复制到剪贴板
-    navigator.clipboard.writeText(codeText)
-      .then(() => {
-        setCopied(true)
+    try {
+      // 检查是否支持 Clipboard API
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(codeText)
+      } else {
+        // 降级方案：使用传统的 document.execCommand
+        const textArea = document.createElement('textarea')
+        textArea.value = codeText
+        textArea.style.position = 'fixed'
+        textArea.style.left = '-999999px'
+        textArea.style.top = '-999999px'
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
         
-        // 2秒后重置复制状态
-        clearTimeout(timerRef.current)
-        timerRef.current = setTimeout(() => {
-          setCopied(false)
-        }, 2000)
-      })
-      .catch((error) => {
-        console.error('复制失败:', error)
-      })
+        const successful = document.execCommand('copy')
+        document.body.removeChild(textArea)
+        
+        if (!successful) {
+          throw new Error('复制命令执行失败')
+        }
+      }
+      
+      setCopied(true)
+      
+      // 2秒后重置复制状态
+      clearTimeout(timerRef.current)
+      timerRef.current = setTimeout(() => {
+        setCopied(false)
+      }, 2000)
+      
+    } catch (error) {
+      console.error('复制失败:', error)
+      
+      // 显示错误提示（可选）
+      alert('复制失败，请手动选择并复制代码')
+    }
   }, [])
 
   // 组件卸载时清除定时器
