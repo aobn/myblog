@@ -76,13 +76,22 @@ export function TimelineArchive({ articles, className }: TimelineArchiveProps) {
         
         return (
           <div key={year} className="relative">
-            {/* 年份标题 - 放在左侧 */}
+            {/* 年份标题 - 桌面端在左侧，移动端在右侧 */}
             <div className="relative">
-              <div className="absolute -left-[60px] top-0 z-10">
+              {/* 桌面端年份圆圈 - 左侧 */}
+              <div className="absolute -left-[60px] top-0 z-10 hidden md:block">
                 <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg">
                   {year}
                 </div>
               </div>
+              
+              {/* 移动端年份圆圈 - 右侧 */}
+              <div className="absolute -right-[30px] top-0 z-10 md:hidden">
+                <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-base">
+                  {year}
+                </div>
+              </div>
+              
               <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-2">
                 <div className="flex items-center">
                   <div className="w-6 h-[2px] bg-primary"></div>
@@ -101,7 +110,7 @@ export function TimelineArchive({ articles, className }: TimelineArchiveProps) {
                 
                 return (
                   <div key={`${year}-${monthKey}`} className="mb-8 relative">
-                    {/* 月份标记点 */}
+                    {/* 月份标记点 - 响应式调整 */}
                     <div className="absolute -left-[41px] w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium">
                       {monthKey}
                     </div>
@@ -119,7 +128,7 @@ export function TimelineArchive({ articles, className }: TimelineArchiveProps) {
                         
                         return (
                           <div key={article.id} className="relative group">
-                            {/* 日期标记点 */}
+                            {/* 日期标记点 - 响应式调整 */}
                             <div className="absolute -left-[33px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-muted border border-border flex items-center justify-center text-xs text-muted-foreground">
                               {day}
                             </div>
