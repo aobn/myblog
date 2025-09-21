@@ -40,9 +40,9 @@ export function highlightText(text: string, query: string): React.ReactNode {
       return React.createElement(
         'span',
         {
-          key: index,
           className: 'bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-1 py-0.5 rounded font-semibold',
-          style: { backgroundColor: '#fde047', color: '#000' }
+          style: { backgroundColor: '#fde047', color: '#000' },
+          key: index
         },
         part
       )
