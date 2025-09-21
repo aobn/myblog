@@ -76,23 +76,32 @@ export function TimelineArchive({ articles, className }: TimelineArchiveProps) {
         
         return (
           <div key={year} className="relative">
-            {/* 年份标题 - 响应式布局 */}
-            <div className="relative">
+            {/* 年份标题 - 全新设计 */}
+            <div className="relative mb-6">
               {/* 桌面端：年份圆圈在左侧 */}
               <div className="hidden md:block absolute -left-[60px] top-0 z-10">
-                <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg">
+                <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg shadow-lg">
                   {year}
                 </div>
               </div>
               
-              {/* 移动端：年份圆圈在右侧 */}
-              <div className="md:hidden absolute -right-4 top-0 z-10">
-                <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
-                  {year}
+              {/* 移动端：年份横条设计 */}
+              <div className="md:hidden mb-4">
+                <div className="flex items-center justify-between bg-primary/10 rounded-lg p-3 border border-primary/20">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
+                      {year}
+                    </div>
+                    <h2 className="text-lg font-bold text-primary">{year} 年</h2>
+                  </div>
+                  <Badge variant="secondary" className="text-xs">
+                    {Object.values(yearData.months).reduce((acc, month) => acc + month.articles.length, 0)} 篇
+                  </Badge>
                 </div>
               </div>
               
-              <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-2">
+              {/* 桌面端：年份信息条 */}
+              <div className="hidden md:block sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-2">
                 <div className="flex items-center">
                   <div className="w-6 h-[2px] bg-primary"></div>
                   <Badge variant="outline" className="ml-2 text-sm">
@@ -102,42 +111,48 @@ export function TimelineArchive({ articles, className }: TimelineArchiveProps) {
               </div>
             </div>
             
-            {/* 时间线 - 响应式间距 */}
-            <div className="relative ml-3 md:ml-6 pl-4 md:pl-8 border-l-2 border-dashed border-muted-foreground/30">
+            {/* 时间线 - 优化布局 */}
+            <div className="relative ml-0 md:ml-6 pl-6 md:pl-8 border-l-2 border-dashed border-muted-foreground/30">
               {sortedMonths.map(monthKey => {
                 const monthData = yearData.months[monthKey]
                 const monthName = format(new Date(`${year}-${monthKey}-01`), 'MMMM')
                 
                 return (
                   <div key={`${year}-${monthKey}`} className="mb-8 relative">
-                    {/* 月份标记点 - 响应式定位 */}
-                    <div className="absolute -left-[25px] md:-left-[41px] w-6 h-6 md:w-8 md:h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs md:text-sm font-medium">
+                    {/* 月份标记点 - 优化设计 */}
+                    <div className="absolute -left-[31px] md:-left-[41px] w-8 h-8 md:w-8 md:h-8 rounded-full bg-primary/90 flex items-center justify-center text-primary-foreground text-xs md:text-sm font-medium shadow-md border-2 border-background">
                       {monthKey}
                     </div>
                     
-                    {/* 月份标题 - 响应式字体大小 */}
-                    <h3 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-foreground">
-                      {monthName}
-                    </h3>
+                    {/* 月份标题 - 优化样式 */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <h3 className="text-lg md:text-xl font-semibold text-foreground">
+                        {monthName}
+                      </h3>
+                      <div className="hidden md:block flex-1 h-px bg-border"></div>
+                      <Badge variant="secondary" className="text-xs md:hidden">
+                        {monthData.articles.length} 篇
+                      </Badge>
+                    </div>
                     
-                    {/* 文章列表 - 简化版 */}
-                    <div className="space-y-2 md:space-y-3">
+                    {/* 文章列表 - 优化设计 */}
+                    <div className="space-y-1 md:space-y-2">
                       {monthData.articles.map(article => {
                         const publishDate = new Date(article.publishedAt)
                         const day = format(publishDate, 'dd')
                         
                         return (
                           <div key={article.id} className="relative group">
-                            {/* 日期标记点 - 响应式定位和大小 */}
-                            <div className="absolute -left-[21px] md:-left-[33px] top-1/2 -translate-y-1/2 w-4 h-4 md:w-6 md:h-6 rounded-full bg-muted border border-border flex items-center justify-center text-xs text-muted-foreground">
+                            {/* 日期标记点 - 精致设计 */}
+                            <div className="absolute -left-[27px] md:-left-[33px] top-1/2 -translate-y-1/2 w-6 h-6 md:w-6 md:h-6 rounded-full bg-background border-2 border-primary/30 flex items-center justify-center text-xs text-muted-foreground font-medium shadow-sm group-hover:border-primary/60 group-hover:bg-primary/5 transition-all duration-200">
                               {day}
                             </div>
                             
-                            {/* 简化的文章展示 - 只显示标题，响应式间距 */}
-                            <div className="py-1.5 md:py-2 pl-1 hover:bg-accent/20 rounded-md transition-colors">
+                            {/* 文章展示 - 卡片化设计 */}
+                            <div className="py-2 md:py-2.5 pl-2 pr-3 hover:bg-accent/30 rounded-lg transition-all duration-200 group-hover:shadow-sm border border-transparent hover:border-border/50">
                               <Link 
                                 to={`/article/${article.id}`}
-                                className="text-sm font-medium hover:text-primary transition-colors block leading-relaxed"
+                                className="text-sm md:text-base font-medium hover:text-primary transition-colors block leading-relaxed group-hover:translate-x-1 transition-transform duration-200"
                               >
                                 {article.title}
                               </Link>
