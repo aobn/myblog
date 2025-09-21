@@ -6,7 +6,7 @@
  */
 
 import * as React from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Calendar, Clock, Eye, Heart, Share2, Bookmark, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -42,12 +42,17 @@ const getAuthorInitials = (name: string) => {
 
 export function ArticleDetail() {
   const { id } = useParams<{ id: string }>()
+  const [searchParams] = useSearchParams()
   const [article, setArticle] = React.useState<Article | null>(null)
   const [relatedArticles, setRelatedArticles] = React.useState<Article[]>([])
   const [loading, setLoading] = React.useState(true)
   const [isLiked, setIsLiked] = React.useState(false)
   const [isBookmarked, setIsBookmarked] = React.useState(false)
   const [comment, setComment] = React.useState('')
+  
+  // 获取URL参数
+  const highlightQuery = searchParams.get('highlight')
+  const anchorText = searchParams.get('anchor')
 
   // 加载文章数据
   React.useEffect(() => {
@@ -77,6 +82,161 @@ export function ArticleDetail() {
     
     loadArticle()
   }, [id])
+
+  // 处理内容定位和高亮
+  React.useEffect(() => {
+    if (!article || !anchorText) return
+
+    const locateContent = () => {
+      console.log('尝试定位内容:', decodeURIComponent(anchorText))
+      
+      // 尝试通过文本内容定位
+      const articleContent = document.querySelector('.markdown-content')
+      if (!articleContent) {
+        console.log('未找到文章内容容器')
+        return false
+      }
+
+      const decodedAnchor = decodeURIComponent(anchorText).toLowerCase().trim()
+      console.log('解码后的锚点文本:', decodedAnchor)
+      
+      // 获取所有文本节点
+      const walker = document.createTreeWalker(
+        articleContent,
+        NodeFilter.SHOW_TEXT,
+        null
+      )
+
+      const textNodes: Text[] = []
+      let node
+      while (node = walker.nextNode()) {
+        if (node.textContent && node.textContent.trim()) {
+          textNodes.push(node as Text)
+        }
+      }
+
+      console.log('找到文本节点数量:', textNodes.length)
+
+      // 尝试多种匹配策略
+      const searchStrategies = [
+        // 策略1: 精确匹配前30个字符
+        (text: string) => text.includes(decodedAnchor.substring(0, 30)),
+        // 策略2: 匹配前20个字符
+        (text: string) => text.includes(decodedAnchor.substring(0, 20)),
+        // 策略3: 匹配前15个字符
+        (text: string) => text.includes(decodedAnchor.substring(0, 15)),
+        // 策略4: 分词匹配
+        (text: string) => {
+          const anchorWords = decodedAnchor.split(/\s+/).filter(w => w.length > 2)
+          return anchorWords.length > 0 && anchorWords.some(word => text.includes(word))
+        }
+      ]
+
+      for (const strategy of searchStrategies) {
+        for (const textNode of textNodes) {
+          const textContent = textNode.textContent?.toLowerCase().trim() || ''
+          
+          if (strategy(textContent)) {
+            const element = textNode.parentElement
+            if (element) {
+              console.log('找到匹配元素:', element.tagName, textContent.substring(0, 50))
+              
+              // 滚动到元素位置
+              element.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center',
+                inline: 'nearest'
+              })
+              
+              // 添加临时高亮效果
+              const originalBg = element.style.backgroundColor
+              const originalTransition = element.style.transition
+              
+              element.style.backgroundColor = '#fef3c7'
+              element.style.transition = 'background-color 0.3s ease'
+              element.style.padding = '4px 8px'
+              element.style.borderRadius = '4px'
+              
+              setTimeout(() => {
+                element.style.backgroundColor = originalBg
+                element.style.transition = originalTransition
+                element.style.padding = ''
+                element.style.borderRadius = ''
+              }, 3000)
+              
+              return true
+            }
+          }
+        }
+      }
+
+      console.log('未找到匹配的内容，尝试备用策略')
+      
+      // 备用策略：如果有高亮查询，尝试定位到第一个匹配的关键词
+      if (highlightQuery) {
+        const queryWords = highlightQuery.toLowerCase().split(/\s+/).filter(w => w.length > 1)
+        
+        for (const word of queryWords) {
+          for (const textNode of textNodes) {
+            const textContent = textNode.textContent?.toLowerCase() || ''
+            if (textContent.includes(word)) {
+              const element = textNode.parentElement
+              if (element) {
+                console.log('备用策略找到匹配:', word, textContent.substring(0, 30))
+                
+                element.scrollIntoView({ 
+                  behavior: 'smooth', 
+                  block: 'center',
+                  inline: 'nearest'
+                })
+                
+                // 添加临时高亮效果
+                const originalBg = element.style.backgroundColor
+                element.style.backgroundColor = '#dbeafe'
+                element.style.transition = 'background-color 0.3s ease'
+                element.style.padding = '2px 4px'
+                element.style.borderRadius = '4px'
+                
+                setTimeout(() => {
+                  element.style.backgroundColor = originalBg
+                  element.style.padding = ''
+                  element.style.borderRadius = ''
+                }, 2000)
+                
+                return true
+              }
+            }
+          }
+        }
+      }
+      
+      return false
+    }
+
+    // 多次尝试定位，确保内容已完全渲染
+    const attempts = [800, 1500, 2500]
+    let attemptIndex = 0
+
+    const tryLocate = () => {
+      console.log(`第 ${attemptIndex + 1} 次尝试定位内容`)
+      
+      if (locateContent()) {
+        console.log('定位成功！')
+        return // 成功定位，停止尝试
+      }
+      
+      attemptIndex++
+      if (attemptIndex < attempts.length) {
+        setTimeout(tryLocate, attempts[attemptIndex] - (attemptIndex > 0 ? attempts[attemptIndex - 1] : 0))
+      } else {
+        console.log('所有定位尝试都失败了')
+      }
+    }
+
+    const timer = setTimeout(tryLocate, attempts[0])
+
+    return () => clearTimeout(timer)
+  }, [article, anchorText, highlightQuery])
 
   if (loading) {
     return (
@@ -252,7 +412,8 @@ export function ArticleDetail() {
             <div className="mb-12">
               <MarkdownRenderer 
                 content={article.content} 
-                className="text-left [&>*]:text-left"
+                className="text-left [&>*]:text-left markdown-content"
+                highlightQuery={highlightQuery}
               />
             </div>
 

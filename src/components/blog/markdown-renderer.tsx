@@ -11,13 +11,23 @@ import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 import 'highlight.js/styles/github-dark.css'
 import { CodeBlock } from './code-block'
+import { highlightText } from '@/lib/highlight-utils'
 
 interface MarkdownRendererProps {
   content: string
   className?: string
+  highlightQuery?: string | null
 }
 
-export default function MarkdownRenderer({ content, className = '' }: MarkdownRendererProps) {
+export default function MarkdownRenderer({ content, className = '', highlightQuery }: MarkdownRendererProps) {
+  
+  // 高亮文本的辅助函数
+  const renderHighlightedText = (children: React.ReactNode): React.ReactNode => {
+    if (!highlightQuery || typeof children !== 'string') {
+      return children
+    }
+    return highlightText(children, highlightQuery)
+  }
   return (
     <div className={`prose prose-lg dark:prose-invert max-w-none ${className}`}>
       <ReactMarkdown
@@ -27,24 +37,32 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
           // 自定义标题渲染
           h1: (props: any) => (
             <h1 className="text-3xl font-bold mb-6 mt-8 text-foreground border-b pb-2">
-              {props.children}
+              {React.Children.map(props.children, (child) => 
+                typeof child === 'string' ? renderHighlightedText(child) : child
+              )}
             </h1>
           ),
           h2: (props: any) => (
             <h2 className="text-2xl font-semibold mb-4 mt-8 text-foreground">
-              {props.children}
+              {React.Children.map(props.children, (child) => 
+                typeof child === 'string' ? renderHighlightedText(child) : child
+              )}
             </h2>
           ),
           h3: (props: any) => (
             <h3 className="text-xl font-semibold mb-3 mt-6 text-foreground">
-              {props.children}
+              {React.Children.map(props.children, (child) => 
+                typeof child === 'string' ? renderHighlightedText(child) : child
+              )}
             </h3>
           ),
           
           // 自定义段落渲染
           p: (props: any) => (
             <p className="mb-4 leading-7 text-muted-foreground">
-              {props.children}
+              {React.Children.map(props.children, (child) => 
+                typeof child === 'string' ? renderHighlightedText(child) : child
+              )}
             </p>
           ),
           
@@ -99,7 +117,9 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
           ),
           li: (props: any) => (
             <li className="text-muted-foreground">
-              {props.children}
+              {React.Children.map(props.children, (child) => 
+                typeof child === 'string' ? renderHighlightedText(child) : child
+              )}
             </li>
           ),
           

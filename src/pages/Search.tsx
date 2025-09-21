@@ -203,7 +203,20 @@ export default function Search() {
               {!isLoading && searchResult && searchResult.articles.length > 0 && (
                 <div className="space-y-4">
                   {searchResult.articles.map((article: SearchResultArticle) => (
-                    <Card key={article.id} className="p-0 cursor-pointer relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-primary/50">
+                    <Card 
+                      key={article.id} 
+                      className="p-0 cursor-pointer relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-primary/50"
+                      onClick={(e) => {
+                        // 检查点击的是否是内容片段
+                        const target = e.target as HTMLElement
+                        const isSnippetClick = target.closest('.snippet-clickable')
+                        
+                        if (!isSnippetClick) {
+                          // 如果不是点击内容片段，则跳转到文章页面
+                          window.location.href = `/article/${article.id}`
+                        }
+                      }}
+                    >
                       <div className="flex flex-col sm:flex-row gap-4 p-4">
                         <div className="flex-1 space-y-3 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
@@ -258,10 +271,41 @@ export default function Search() {
                             <div className="space-y-2">
                               <div className="text-xs font-medium text-muted-foreground">相关内容片段:</div>
                               {article.contextSnippets.map((snippet, index) => (
-                                <div key={index} className="bg-muted/50 rounded-md p-2 text-sm">
-                                  <span className="text-muted-foreground">
+                                <div 
+                                  key={index} 
+                                  className="snippet-clickable bg-muted/50 rounded-md p-3 text-sm cursor-pointer hover:bg-muted/70 hover:shadow-sm transition-all duration-200 border border-transparent hover:border-primary/20 relative group"
+                                  onClick={(e) => {
+                                    e.preventDefault()
+                                    e.stopPropagation()
+                                    
+                                    console.log('片段被点击了!')
+                                    
+                                    // 生成内容锚点并跳转
+                                    // 清理片段文本，移除省略号和多余空格
+                                    const cleanSnippet = snippet
+                                      .replace(/\.\.\./g, '')
+                                      .replace(/\s+/g, ' ')
+                                      .trim()
+                                    
+                                    // 取前50个字符作为锚点
+                                    const anchorText = encodeURIComponent(cleanSnippet.substring(0, 50))
+                                    
+                                    console.log('跳转到文章:', article.id, '锚点:', cleanSnippet.substring(0, 50))
+                                    
+                                    // 直接跳转到带锚点的文章页面
+                                    window.location.href = `/article/${article.id}?highlight=${encodeURIComponent(query)}&anchor=${anchorText}`
+                                  }}
+                                  title="点击跳转到文章中的对应位置"
+                                >
+                                  <span className="text-muted-foreground group-hover:text-foreground transition-colors">
                                     {highlightText(snippet, query)}
                                   </span>
+                                  {/* 点击提示图标 */}
+                                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <svg className="h-3 w-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                  </div>
                                 </div>
                               ))}
                             </div>
