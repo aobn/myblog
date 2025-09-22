@@ -6,12 +6,14 @@
  */
 
 import { Link, useNavigate } from 'react-router-dom'
-import { Calendar, Clock } from 'lucide-react'
+import { Calendar, Clock, Eye, Users } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { Article } from '@/types/blog'
 import { cn } from '@/lib/utils'
 import { useMouseTransform } from '@/hooks/use-mouse-transform'
+import { useArticleStatsStorage } from '@/hooks/use-article-stats-storage'
+import { NumberCounter } from '@/components/ui/number-counter'
 
 interface ArticleCardProps {
   article: Article
@@ -36,6 +38,9 @@ export function ArticleCard({ article, variant = 'default', className }: Article
     rotateY: 5,
     perspective: 1000
   });
+  
+  // 获取文章统计数据（包含本地存储）
+  const { displayStats } = useArticleStatsStorage(article.slug || article.id);
   
   const cardVariants = {
     default: 'transition-all duration-300 bg-black/20 backdrop-blur-sm shadow-lg',
@@ -129,6 +134,30 @@ export function ArticleCard({ article, variant = 'default', className }: Article
               <Clock className="h-3 w-3" />
               <span>{article.readTime || 0} 分钟阅读</span>
             </div>
+            {/* 百度统计浏览量 */}
+            <div className="flex items-center gap-1">
+              <Eye className="h-3 w-3" />
+              <span>
+                <NumberCounter 
+                  value={displayStats.pvCount || article.viewCount || 0} 
+                  duration={1000}
+                  className="font-medium"
+                /> 阅读
+              </span>
+            </div>
+            {/* 百度统计访客量 */}
+            {displayStats.visitorCount > 0 && (
+              <div className="flex items-center gap-1">
+                <Users className="h-3 w-3" />
+                <span>
+                  <NumberCounter 
+                    value={displayStats.visitorCount} 
+                    duration={1200}
+                    className="font-medium"
+                  /> 访客
+                </span>
+              </div>
+            )}
           </div>
         </div>
 

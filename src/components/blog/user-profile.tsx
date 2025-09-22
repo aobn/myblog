@@ -6,8 +6,12 @@
  */
 
 import { Card, CardContent } from '@/components/ui/card'
-import { Github, Calendar } from 'lucide-react'
+import { Github, Calendar, Eye, Users } from 'lucide-react'
 import { useMouseTransform } from '@/hooks/use-mouse-transform'
+import { useBaiduAnalytics } from '@/hooks/use-baidu-analytics'
+import { NumberCounter } from '@/components/ui/number-counter'
+import { useLocalStorage } from '@/hooks/use-local-storage'
+import { useEffect } from 'react'
 
 interface UserProfileProps {
   className?: string
@@ -20,6 +24,40 @@ export function UserProfile({ className }: UserProfileProps) {
     rotateY: 8,
     perspective: 1000
   });
+
+  // 本地存储的统计数据
+  const [cachedStats, setCachedStats] = useLocalStorage('blog-total-stats', {
+    totalPvCount: 0,
+    totalVisitorCount: 0,
+    lastUpdated: 0
+  });
+
+  // 获取百度统计总数据
+  const { totalStats } = useBaiduAnalytics();
+
+  // 当获取到新数据时，更新本地存储
+  useEffect(() => {
+    if (totalStats && (totalStats.totalPvCount > 0 || totalStats.totalVisitorCount > 0)) {
+      const newStats = {
+        totalPvCount: totalStats.totalPvCount,
+        totalVisitorCount: totalStats.totalVisitorCount,
+        lastUpdated: Date.now()
+      };
+      
+      // 只有数据真正变化时才更新
+      if (newStats.totalPvCount !== cachedStats.totalPvCount || 
+          newStats.totalVisitorCount !== cachedStats.totalVisitorCount) {
+        console.log('📊 更新本地存储的统计数据:', newStats);
+        setCachedStats(newStats);
+      }
+    }
+  }, [totalStats, cachedStats, setCachedStats]);
+
+  // 显示的数据：优先使用最新数据，否则使用缓存数据
+  const displayStats = {
+    totalPvCount: totalStats?.totalPvCount || cachedStats.totalPvCount,
+    totalVisitorCount: totalStats?.totalVisitorCount || cachedStats.totalVisitorCount
+  };
 
   return (
     <Card 
@@ -60,10 +98,24 @@ export function UserProfile({ className }: UserProfileProps) {
           {/* 统计信息 */}
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
-              <span>👁️ 观点 34319</span>
+              <Eye className="h-4 w-4" />
+              <span>
+                浏览 <NumberCounter 
+                  value={displayStats.totalPvCount} 
+                  duration={1500}
+                  className="font-medium"
+                />
+              </span>
             </div>
             <div className="flex items-center gap-1">
-              <span>💬 访客 2773</span>
+              <Users className="h-4 w-4" />
+              <span>
+                访客 <NumberCounter 
+                  value={displayStats.totalVisitorCount} 
+                  duration={1800}
+                  className="font-medium"
+                />
+              </span>
             </div>
           </div>
 

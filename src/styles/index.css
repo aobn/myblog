@@ -247,4 +247,25 @@
     50% { transform: scale(1.15); }
     100% { transform: scale(1.1); }
   }
+  
+  /* 翻页动画样式 */
+  .rotate-x-0 {
+    transform: rotateX(0deg);
+  }
+  
+  .rotate-x-90 {
+    transform: rotateX(90deg);
+  }
+  
+  .-rotate-x-90 {
+    transform: rotateX(-90deg);
+  }
+  
+  .origin-bottom {
+    transform-origin: bottom;
+  }
+  
+  .origin-top {
+    transform-origin: top;
+  }
 }

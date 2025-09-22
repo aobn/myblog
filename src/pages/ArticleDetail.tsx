@@ -7,7 +7,7 @@
 
 import * as React from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, Calendar, Clock, Eye, Heart, Share2, Bookmark, MessageCircle } from 'lucide-react'
+import { ArrowLeft, Calendar, Clock, Eye, Heart, Share2, Bookmark, MessageCircle, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import 'highlight.js/styles/github-dark.css'
@@ -19,6 +19,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { BlogSidebar } from '@/components/blog/blog-sidebar'
 import { ArticleCard } from '@/components/blog/article-card'
 import { ArticleToc } from '@/components/blog/article-toc'
+
+import { useArticleStatsStorage } from '@/hooks/use-article-stats-storage'
+import { NumberCounter } from '@/components/ui/number-counter'
 import { getPostById, loadAllPosts } from '@/lib/simple-post-loader'
 import type { Article } from '@/types/blog'
 import { cn } from '@/lib/utils'
@@ -50,6 +53,9 @@ export function ArticleDetail() {
   const [isLiked, setIsLiked] = React.useState(false)
   const [isBookmarked, setIsBookmarked] = React.useState(false)
   const [comment, setComment] = React.useState('')
+  
+  // 获取文章统计数据（包含本地存储）
+  const { displayStats, loading: statsLoading } = useArticleStatsStorage(article?.slug || article?.id || '')
   
   // 获取URL参数
   const highlightQuery = searchParams.get('highlight')
@@ -375,8 +381,27 @@ export function ArticleDetail() {
                   </div>
                   <div className="flex items-center gap-1">
                     <Eye className="h-4 w-4" />
-                    <span>{article.viewCount} 次阅读</span>
+                    <span>
+                      <NumberCounter 
+                        value={displayStats.pvCount || article?.viewCount || 0} 
+                        duration={1200}
+                        className="font-medium"
+                      /> 次阅读
+                    </span>
                   </div>
+                  {/* 百度统计访客量数据 */}
+                  {displayStats.visitorCount > 0 && (
+                    <div className="flex items-center gap-1">
+                      <Users className="h-4 w-4" />
+                      <span>
+                        <NumberCounter 
+                          value={displayStats.visitorCount} 
+                          duration={1400}
+                          className="font-medium"
+                        /> 访客
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
 

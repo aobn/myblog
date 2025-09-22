@@ -11,6 +11,7 @@ import { Search, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from '@/components/ui/navigation-menu'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { getAnalyticsConfig } from '@/config/analytics'
 import { cn } from '@/lib/utils'
 
 interface BlogHeaderProps {
@@ -25,6 +26,7 @@ const navigationItems = [
   { name: '分类', href: '/categories' },
   { name: '标签', href: '/tags' },
   { name: '归档', href: '/archive' },
+  { name: '统计', href: '/analytics' },
   { name: '关于', href: '/about' },
 ]
 
@@ -36,10 +38,11 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
   React.useEffect(() => {
     // 初始化百度统计
     if (typeof window !== 'undefined') {
+      const config = getAnalyticsConfig();
       (window as any)._hmt = (window as any)._hmt || [];
       (function() {
         const hm = document.createElement("script");
-        hm.src = "https://hm.baidu.com/hm.js?db576854c7d1f5a4decff72ed959872b";
+        hm.src = `https://hm.baidu.com/hm.js?${config.siteCode}`;
         const s = document.getElementsByTagName("script")[0]; 
         s.parentNode?.insertBefore(hm, s);
       })();

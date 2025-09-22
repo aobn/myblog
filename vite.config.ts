@@ -11,11 +11,20 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-    server: {
+  server: {
     // 添加允许的主机
     allowedHosts: [
       'ikc.qzz.io',  // 允许访问的主机
       // 可以添加其他需要允许的主机
-    ]
+    ],
+    // 代理配置
+    proxy: {
+      '/api/baidu': {
+        target: 'https://openapi.baidu.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/baidu/, ''),
+        secure: true,
+      }
+    }
   }
 })

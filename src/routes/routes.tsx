@@ -12,6 +12,7 @@ const TagsPage = lazy(() => import('@/pages/Tags'));
 const AboutPage = lazy(() => import('@/pages/About'));
 const SearchPage = lazy(() => import('@/pages/Search'));
 const ArchivePage = lazy(() => import('@/pages/Archive'));
+const AnalyticsPage = lazy(() => import('@/pages/Analytics'));
 
 // 404 页面组件
 function NotFoundPage() {
@@ -84,6 +85,10 @@ const router = createBrowserRouter([
           {
             path: 'about',
             element: <AboutPage />
+          },
+          {
+            path: 'analytics',
+            element: <AnalyticsPage />
           }
         ]
       },
