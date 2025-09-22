@@ -32,9 +32,9 @@ const formatDate = (dateString: string) => {
 export function ArticleCard({ article, variant = 'default', className }: ArticleCardProps) {
   const navigate = useNavigate();
   const cardVariants = {
-    default: 'transition-all duration-300',
-    featured: 'border-primary/20 bg-gradient-to-br from-primary/5 to-transparent',
-    compact: 'shadow-sm'
+    default: 'transition-all duration-300 bg-transparent',
+    featured: 'border-primary/20 bg-transparent',
+    compact: 'shadow-sm bg-transparent'
   }
   
   // 处理卡片点击事件
