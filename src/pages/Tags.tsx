@@ -91,10 +91,13 @@ export default function Tags() {
 
   if (loading) {
     return (
-      <div>
+      <div className="min-h-screen">
         <main className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <div className="text-lg text-muted-foreground">加载标签中...</div>
+          <div className="min-h-[600px] flex items-center justify-center">
+            <div className="text-center space-y-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              <div className="text-lg text-muted-foreground">加载标签中...</div>
+            </div>
           </div>
         </main>
       </div>
@@ -105,9 +108,8 @@ export default function Tags() {
   const sortedTags = [...tags].sort((a, b) => b.articleCount - a.articleCount)
 
   return (
-    <div>
-      
-      <main className="container mx-auto px-4 py-8">
+    <div className="min-h-screen">
+      <main className="container mx-auto px-4 py-8 min-h-[calc(100vh-4rem)]">
         {/* 页面标题 */}
         <div className="text-center space-y-4 mb-12">
           <div className="flex items-center justify-center gap-2">

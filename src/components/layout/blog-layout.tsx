@@ -1,14 +1,15 @@
 /**
  * 博客布局组件
  * 
- * @author CodeBuddy
- * @date 2025-09-18
+ * @author xxh
+ * @date 2025-09-22
  */
 
 import * as React from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { BlogHeader } from '@/components/blog/blog-header'
 import { BlogFooter } from '@/components/blog/blog-footer'
+import { PageTransition } from '@/components/layout/page-transition'
 
 /**
  * 博客布局组件
@@ -23,13 +24,15 @@ export function BlogLayout() {
   }, [location.pathname])
 
   return (
-    <div className="min-h-screen flex flex-col blog-background relative">
+    <div className="min-h-screen flex flex-col blog-background relative page-container">
       {/* 头部导航 */}
       <BlogHeader />
       
       {/* 主要内容区域 */}
-      <main className="flex-1 relative z-10">
-        <Outlet />
+      <main className="flex-1 relative z-10 main-content">
+        <PageTransition>
+          <Outlet />
+        </PageTransition>
       </main>
       
       {/* 底部信息 */}

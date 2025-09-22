@@ -116,6 +116,25 @@
   }
   body {
     @apply text-foreground;
+    /* 防止页面跳动 */
+    overflow-x: hidden;
+  }
+  
+  /* 页面容器最小高度 */
+  #root {
+    min-height: 100vh;
+  }
+  
+  /* 防止布局抖动 */
+  .page-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .main-content {
+    flex: 1;
+    min-height: calc(100vh - 4rem);
   }
 }
 
