@@ -68,7 +68,7 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
 
 
   return (
-    <header className={cn("w-full border-b", className)}>
+    <header className={cn("w-full", className)}>
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo 和站点名称 */}

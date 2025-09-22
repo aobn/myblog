@@ -28,8 +28,6 @@ const formatDate = (dateString: string) => {
   })
 }
 
-
-
 export function ArticleCard({ article, variant = 'default', className }: ArticleCardProps) {
   const navigate = useNavigate();
   const mouseTransform = useMouseTransform<HTMLDivElement>({
@@ -40,9 +38,9 @@ export function ArticleCard({ article, variant = 'default', className }: Article
   });
   
   const cardVariants = {
-    default: 'transition-all duration-300 bg-transparent',
-    featured: 'border-primary/20 bg-transparent',
-    compact: 'shadow-sm bg-transparent'
+    default: 'transition-all duration-300 bg-black/20 backdrop-blur-sm shadow-lg',
+    featured: 'border-primary/20 bg-black/25 backdrop-blur-sm shadow-xl',
+    compact: 'shadow-md bg-black/20 backdrop-blur-sm'
   }
   
   // 处理卡片点击事件
@@ -62,14 +60,13 @@ export function ArticleCard({ article, variant = 'default', className }: Article
       className={cn(
         cardVariants[variant], 
         className, 
-        'p-0 cursor-pointer relative'
+        'p-0 cursor-pointer relative border-0 hover:bg-black/30 hover:shadow-xl'
       )}
       onClick={handleCardClick}
       onMouseMove={mouseTransform.onMouseMove}
       onMouseEnter={mouseTransform.onMouseEnter}
       onMouseLeave={mouseTransform.onMouseLeave}
     >
-
       {/* 响应式布局：大屏幕横向，小屏幕纵向 */}
       <div className={cn(
         "flex flex-col sm:flex-row gap-4",
@@ -78,13 +75,14 @@ export function ArticleCard({ article, variant = 'default', className }: Article
         {/* 内容区域 */}
         <div className={cn(
           "flex-1 min-w-0",
-          variant === 'featured' ? 'space-y-4' : 'space-y-2'
+          variant === 'featured' ? 'space-y-4' : 'space-y-3'
         )}>
           {/* 分类标签 */}
           <div className="flex items-center gap-2 flex-wrap">
             {article.category && (
               <Badge 
                 variant="secondary" 
+                className="font-medium"
                 style={{ 
                   color: article.category.color || '#64748b' 
                 }}
@@ -93,7 +91,7 @@ export function ArticleCard({ article, variant = 'default', className }: Article
               </Badge>
             )}
             {article.tags && article.tags.slice(0, 2).map((tag) => (
-              <Badge key={tag.id} variant="outline" className="text-xs">
+              <Badge key={tag.id} variant="outline" className="text-xs font-medium">
                 {tag.name}
               </Badge>
             ))}
@@ -102,9 +100,9 @@ export function ArticleCard({ article, variant = 'default', className }: Article
           {/* 文章标题 */}
           <Link to={`/article/${article.id}`} className="group">
             <h3 className={cn(
-              "font-semibold leading-tight group-hover:text-primary transition-colors",
-              variant === 'featured' ? 'text-xl' : 'text-lg',
-              variant === 'compact' ? 'text-base' : ''
+              "font-bold leading-tight group-hover:text-primary transition-colors text-gray-900 dark:text-gray-100",
+              variant === 'featured' ? 'text-2xl' : 'text-xl',
+              variant === 'compact' ? 'text-lg' : ''
             )}>
               {article.title}
             </h3>
@@ -112,16 +110,16 @@ export function ArticleCard({ article, variant = 'default', className }: Article
 
           {/* 文章摘要 */}
           <p className={cn(
-            "text-muted-foreground line-clamp-2",
-            variant === 'featured' ? 'text-base leading-relaxed' : 'text-sm'
+            "text-gray-700 dark:text-gray-300 line-clamp-2 leading-relaxed",
+            variant === 'featured' ? 'text-lg font-medium' : 'text-base'
           )}>
             {article.excerpt}
           </p>
 
           {/* 文章元信息 */}
           <div className={cn(
-            "flex items-center gap-4 text-muted-foreground flex-wrap",
-            variant === 'featured' ? 'text-sm mt-4' : 'text-xs'
+            "flex items-center gap-4 text-gray-600 dark:text-gray-400 flex-wrap font-medium",
+            variant === 'featured' ? 'text-sm mt-4' : 'text-sm'
           )}>
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
@@ -140,7 +138,7 @@ export function ArticleCard({ article, variant = 'default', className }: Article
             <img
               src={article.coverImage}
               alt={article.title}
-              className="w-full h-full object-cover rounded-lg transition-transform duration-300 hover:scale-105"
+              className="w-full h-full object-cover rounded-lg transition-transform duration-300 hover:scale-105 shadow-md"
             />
           </div>
         )}

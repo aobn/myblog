@@ -18,7 +18,7 @@ export function BlogFooter() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-transparent border-t mt-auto">
+    <footer className="bg-transparent mt-auto">
       <div className="container mx-auto px-4 py-8">
         {/* 主要内容区域 */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
@@ -139,7 +139,7 @@ export function BlogFooter() {
           </div>
         </div>
 
-        <Separator className="mb-6" />
+
 
         {/* 底部版权和备案信息 */}
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
@@ -184,7 +184,7 @@ export function BlogFooter() {
         </div>
 
         {/* 额外的法律声明 */}
-        <div className="mt-4 pt-4 border-t text-center">
+        <div className="mt-4 pt-4 text-center">
           <p className="text-xs text-muted-foreground">
             本站内容仅供学习交流使用，如有侵权请联系删除 | 
             <Link to="/privacy" className="hover:text-foreground transition-colors ml-1">

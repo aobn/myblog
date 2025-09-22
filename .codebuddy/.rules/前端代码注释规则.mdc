@@ -1,3 +1,8 @@
+---
+description: 
+globs:
+alwaysApply: true
+---
 # 前端代码注释规则
 
 ## 代码注释规范

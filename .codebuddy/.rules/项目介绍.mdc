@@ -1,3 +1,8 @@
+---
+description: 
+globs:
+alwaysApply: true
+---
 # 项目介绍
 
 ## 项目概述
@@ -32,106 +37,139 @@ TypeScript + React Router v7 + shadcn/ui + Tailwind CSS+Zustand的React
 ## 项目结构
 
 ```
-├── src/                  # 源代码目录
-│   ├── App.tsx           # 应用程序主组件
-│   ├── main.tsx          # 应用程序入口文件
-│   ├── vite-env.d.ts     # Vite环境类型声明
-│   ├── assets/           # 静态资源文件
-│   │   └── react.svg     # React图标
-│   ├── components/       # 组件目录
-│   │   ├── theme-provider.tsx  # 主题提供者组件
-│   │   ├── theme-toggle.tsx    # 主题切换组件（带圆形扩散动画）
-│   │   ├── blog/         # 博客相关组件
-│   │   │   ├── article-card.tsx      # 文章卡片组件
-│   │   │   ├── blog-footer.tsx       # 博客页脚组件
-│   │   │   ├── blog-header.tsx       # 博客头部组件（含响应式导航）
-│   │   │   ├── blog-sidebar.tsx      # 博客侧边栏组件
-│   │   │   ├── markdown-renderer.tsx # Markdown渲染组件
-│   │   │   └── simple-markdown.tsx   # 简化Markdown组件
-│   │   ├── layout/       # 布局组件
-│   │   │   ├── blog-layout.tsx       # 博客布局组件
-│   │   │   └── mode-toggle.tsx       # 模式切换组件
-│   │   └── ui/           # UI基础组件（shadcn/ui组件集合）
-│   │       ├── accordion.tsx         # 手风琴组件
-│   │       ├── alert-dialog.tsx      # 警告对话框组件
-│   │       ├── alert.tsx             # 警告组件
-│   │       ├── avatar.tsx            # 头像组件
-│   │       ├── badge.tsx             # 徽章组件
-│   │       ├── button.tsx            # 按钮组件
-│   │       ├── card.tsx              # 卡片组件
-│   │       ├── dialog.tsx            # 对话框组件
-│   │       ├── dropdown-menu.tsx     # 下拉菜单组件
-│   │       ├── input.tsx             # 输入框组件
-│   │       ├── label.tsx             # 标签组件
-│   │       ├── navigation-menu.tsx   # 导航菜单组件
-│   │       ├── scroll-area.tsx       # 滚动区域组件
-│   │       ├── separator.tsx         # 分隔符组件
-│   │       ├── sheet.tsx             # 抽屉组件
-│   │       ├── skeleton.tsx          # 骨架屏组件
-│   │       ├── tabs.tsx              # 标签页组件
-│   │       └── ...                   # 其他UI组件
-│   ├── hooks/            # 自定义React钩子
-│   │   ├── api/          # API请求钩子目录
-│   │   └── use-mobile.ts # 移动设备检测钩子
-│   ├── lib/              # 工具函数和库
-│   │   ├── simple-post-loader.ts # 简单文章加载器
-│   │   └── utils.ts      # 通用工具函数
-│   ├── pages/            # 页面组件
-│   │   ├── About.tsx     # 关于页面
-│   │   ├── Archive.tsx   # 归档页面
-│   │   ├── ArticleDetail.tsx # 文章详情页面
-│   │   ├── ArticleList.tsx   # 文章列表页面
-│   │   ├── BlogHome.tsx      # 博客首页
-│   │   ├── Categories.tsx    # 分类页面
-│   │   ├── HelloWorld.tsx    # 示例页面
-│   │   ├── Search.tsx        # 搜索页面
-│   │   ├── Tags.tsx          # 标签页面
-│   │   └── TestPost.tsx      # 测试文章页面
-│   ├── posts/            # Markdown文章目录
-│   │   ├── 云计算与容器化.md
-│   │   ├── 前端性能优化.md
-│   │   ├── 区块链技术入门.md
-│   │   ├── 如何搭建个人博客.md
-│   │   ├── 数据结构与算法.md
-│   │   ├── 微服务架构设计.md
-│   │   ├── React-18-新特性详解.md
-│   │   ├── TypeScript-高级类型系统.md
-│   │   ├── Docker-容器化部署.md
-│   │   ├── Kubernetes-容器编排.md
-│   │   └── ...           # 更多技术文章
-│   ├── routes/           # 路由配置
-│   │   ├── blog-routes.tsx   # 博客路由配置
-│   │   └── routes.tsx        # 主路由定义文件
-│   ├── store/            # 状态管理（Zustand）
-│   │   ├── blog-store.ts     # 博客状态管理
-│   │   ├── counter-store.ts  # 计数器状态管理
-│   │   └── theme-store.ts    # 主题状态管理
-│   ├── styles/           # 样式文件
-│   │   ├── App.css       # 应用程序样式
-│   │   └── index.css     # 全局样式（含Tailwind CSS）
-│   └── types/            # TypeScript类型定义
-│       ├── blog.ts       # 博客相关类型定义
-│       ├── components.ts # 组件类型定义
-│       └── index.ts      # 通用类型定义
-├── public/               # 公共静态资源
-│   └── vite.svg          # Vite图标
-├── rule/                 # 项目规则和文档
-│   ├── rule.md           # 项目规则文档
-│   ├── 前端代码注释规则.md  # 前端代码注释规范
-│   ├── 前端页面设计规则.md  # 前端页面设计规范
-│   ├── 文件命名规则.md     # 文件命名规范
-│   └── 后端api接口文档/    # 后端API接口文档
+├── src/                              # 源代码目录
+│   ├── App.tsx                       # 应用主组件（ThemeProvider + Outlet）
+│   ├── main.tsx                      # 应用入口，挂载 RouterProvider 与全局样式
+│   ├── vite-env.d.ts                 # Vite 环境类型声明
+│   ├── assets/                       # 静态资源
+│   │   └── react.svg                 # React 图标
+│   ├── components/                   # 组件目录
+│   │   ├── theme-provider.tsx        # 主题提供者
+│   │   ├── theme-toggle.tsx          # 主题切换（圆形扩散动画）
+│   │   ├── blog/                     # 博客相关组件
+│   │   │   ├── article-card.tsx
+│   │   │   ├── article-toc.tsx
+│   │   │   ├── blog-footer.tsx
+│   │   │   ├── blog-header.tsx
+│   │   │   ├── blog-sidebar.tsx
+│   │   │   ├── code-block.tsx
+│   │   │   ├── markdown-renderer.tsx
+│   │   │   ├── search-suggestions.tsx
+│   │   │   ├── simple-markdown.tsx
+│   │   │   ├── timeline-archive.tsx
+│   │   │   ├── user-profile.tsx
+│   │   │   └── UserIpInfo.tsx
+│   │   ├── layout/                   # 布局组件
+│   │   │   ├── blog-layout.tsx
+│   │   │   ├── mode-toggle.tsx
+│   │   │   └── page-transition.tsx
+│   │   └── ui/                       # 基础 UI 组件（shadcn/ui 集合）
+│   │       ├── accordion.tsx
+│   │       ├── alert-dialog.tsx
+│   │       ├── alert.tsx
+│   │       ├── aspect-ratio.tsx
+│   │       ├── avatar.tsx
+│   │       ├── badge.tsx
+│   │       ├── breadcrumb.tsx
+│   │       ├── button.tsx
+│   │       ├── calendar.tsx
+│   │       ├── card.tsx
+│   │       ├── carousel.tsx
+│   │       ├── chart.tsx
+│   │       ├── checkbox.tsx
+│   │       ├── collapsible.tsx
+│   │       ├── command.tsx
+│   │       ├── context-menu.tsx
+│   │       ├── dialog.tsx
+│   │       ├── drawer.tsx
+│   │       ├── dropdown-menu.tsx
+│   │       ├── form.tsx
+│   │       ├── hover-card.tsx
+│   │       ├── input-otp.tsx
+│   │       ├── input.tsx
+│   │       ├── label.tsx
+│   │       ├── menubar.tsx
+│   │       ├── navigation-menu.tsx
+│   │       ├── pagination.tsx
+│   │       ├── popover.tsx
+│   │       ├── progress.tsx
+│   │       ├── radio-group.tsx
+│   │       ├── resizable.tsx
+│   │       ├── scroll-area.tsx
+│   │       ├── select.tsx
+│   │       ├── separator.tsx
+│   │       ├── sheet.tsx
+│   │       ├── sidebar.tsx
+│   │       ├── skeleton.tsx
+│   │       ├── slider.tsx
+│   │       ├── sonner.tsx
+│   │       ├── switch.tsx
+│   │       ├── table.tsx
+│   │       ├── tabs.tsx
+│   │       ├── textarea.tsx
+│   │       ├── toggle-group.tsx
+│   │       ├── toggle.tsx
+│   │       └── tooltip.tsx
+│   ├── hooks/                        # 自定义 Hook
+│   │   ├── api/                      # API 请求钩子目录
+│   │   ├── use-mobile.ts             # 移动设备检测
+│   │   ├── use-mouse-transform.ts    # 鼠标位移变换
+│   │   └── use-simple-mouse-scale.ts # 简易鼠标缩放
+│   ├── lib/                          # 工具与服务
+│   │   ├── highlight-utils.ts        # 代码高亮工具
+│   │   ├── search-service.ts         # 搜索服务
+│   │   ├── simple-post-loader.ts     # Markdown 文章加载器
+│   │   └── utils.ts                  # 通用工具函数
+│   ├── pages/                        # 页面
+│   │   ├── About.tsx
+│   │   ├── Archive.tsx
+│   │   ├── ArticleDetail.tsx
+│   │   ├── ArticleList.tsx
+│   │   ├── BlogHome.tsx
+│   │   ├── Categories.tsx
+│   │   ├── HelloWorld.tsx
+│   │   ├── Search.tsx
+│   │   ├── Tags.tsx
+│   │   └── TestPost.tsx
+│   ├── posts/                        # Markdown 文章目录（节选，禁止在当前文件更新该目录下的文章）
+│   │   ├── 4月测试文章.md
+│   │   ├── 2002-最佳实践 copy.md
+│   │   └── ......
+│   ├── routes/                       # 路由配置
+│   │   ├── blog-routes.tsx
+│   │   └── routes.tsx
+│   ├── store/                        # 状态管理（Zustand）
+│   │   ├── blog-store.ts
+│   │   ├── counter-store.ts
+│   │   └── theme-store.ts
+│   ├── styles/                       # 样式
+│   │   ├── App.css
+│   │   └── index.css                 # 包含 Tailwind CSS 引入
+│   └── types/                        # TypeScript 类型定义
+│       ├── blog.ts
+│       ├── components.ts
+│       └── index.ts
+├── public/                           # 公共静态资源
+│   ├── avatar.jpg
+│   ├── blog-background.jpg
+│   └── vite.svg
+├── rule/                             # 项目规则与文档
+│   ├── rule.md
+│   ├── 前端代码注释规则.md
+│   ├── 前端页面设计规则.md
+│   ├── 文件命名规则.md
+│   └── 后端api接口文档/
 │       └── 接口统一响应文档.md
-├── .gitignore            # Git忽略文件配置
-├── components.json       # shadcn/ui组件配置
-├── eslint.config.js      # ESLint配置文件
-├── index.html            # HTML入口文件
-├── package.json          # 项目依赖和脚本配置
-├── pnpm-lock.yaml        # pnpm锁定文件
-├── tsconfig.json         # TypeScript主配置
-├── tsconfig.app.json     # TypeScript应用配置
-├── tsconfig.node.json    # TypeScript Node配置
-└── vite.config.ts        # Vite配置文件
+├── .gitignore
+├── components.json                   # shadcn/ui 组件配置
+├── eslint.config.js
+├── index.html
+├── package.json
+├── pnpm-lock.yaml
+├── tsconfig.json
+├── tsconfig.app.json
+├── tsconfig.node.json
+└── vite.config.ts
 ```
 
 ## 主要功能

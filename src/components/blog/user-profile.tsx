@@ -24,7 +24,7 @@ export function UserProfile({ className }: UserProfileProps) {
   return (
     <Card 
       ref={mouseTransform.ref}
-      className={className}
+      className={`transition-all duration-300 bg-black/20 backdrop-blur-sm shadow-lg border-0 hover:bg-black/30 hover:shadow-xl ${className || ''}`}
       onMouseMove={mouseTransform.onMouseMove}
       onMouseEnter={mouseTransform.onMouseEnter}
       onMouseLeave={mouseTransform.onMouseLeave}
