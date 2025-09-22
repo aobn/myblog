@@ -59,16 +59,21 @@ export function ArticleCard({ article, variant = 'default', className }: Article
     >
 
       {/* 响应式布局：大屏幕横向，小屏幕纵向 */}
-      <div className="flex flex-col sm:flex-row gap-4 p-4">
+      <div className={cn(
+        "flex flex-col sm:flex-row gap-4",
+        variant === 'featured' ? 'p-6 gap-6' : 'p-4'
+      )}>
         {/* 内容区域 */}
-        <div className="flex-1 space-y-2 min-w-0">
+        <div className={cn(
+          "flex-1 min-w-0",
+          variant === 'featured' ? 'space-y-4' : 'space-y-2'
+        )}>
           {/* 分类标签 */}
           <div className="flex items-center gap-2 flex-wrap">
             {article.category && (
               <Badge 
                 variant="secondary" 
                 style={{ 
-                  backgroundColor: article.category.color ? article.category.color + '20' : '#f1f5f9', 
                   color: article.category.color || '#64748b' 
                 }}
               >
@@ -94,12 +99,18 @@ export function ArticleCard({ article, variant = 'default', className }: Article
           </Link>
 
           {/* 文章摘要 */}
-          <p className="text-muted-foreground text-sm line-clamp-2">
+          <p className={cn(
+            "text-muted-foreground line-clamp-2",
+            variant === 'featured' ? 'text-base leading-relaxed' : 'text-sm'
+          )}>
             {article.excerpt}
           </p>
 
           {/* 文章元信息 */}
-          <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
+          <div className={cn(
+            "flex items-center gap-4 text-muted-foreground flex-wrap",
+            variant === 'featured' ? 'text-sm mt-4' : 'text-xs'
+          )}>
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               <span>{formatDate(article.publishedAt)}</span>

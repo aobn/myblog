@@ -68,7 +68,7 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
 
 
   return (
-    <header className={cn("sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60", className)}>
+    <header className={cn("w-full border-b", className)}>
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo 和站点名称 */}
@@ -88,8 +88,8 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
                     <Link
                       to={item.href}
                       className={cn(
-                        "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-transform duration-200 hover:scale-110 hover:bg-transparent active:scale-125 active:bg-transparent active:duration-100 focus:outline-none focus:bg-transparent bg-transparent disabled:pointer-events-none disabled:opacity-50",
-                        isActiveLink(item.href, item.exact) && "font-bold bg-transparent"
+                        "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-transform duration-200 hover:scale-110 active:scale-125 active:duration-100 focus:outline-none disabled:pointer-events-none disabled:opacity-50",
+                        isActiveLink(item.href, item.exact) && "font-bold"
                       )}
                     >
                       {item.name}
@@ -141,8 +141,8 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
                     key={item.href}
                     to={item.href}
                     className={cn(
-                      "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-transform duration-200 hover:scale-110 hover:bg-transparent active:scale-125 active:bg-transparent active:duration-100 focus:outline-none focus:bg-transparent bg-transparent disabled:pointer-events-none disabled:opacity-50",
-                      isActiveLink(item.href, item.exact) && "font-bold bg-transparent"
+                      "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-transform duration-200 hover:scale-110 active:scale-125 active:duration-100 focus:outline-none disabled:pointer-events-none disabled:opacity-50",
+                      isActiveLink(item.href, item.exact) && "font-bold"
                     )}
                   >
                     {item.name}

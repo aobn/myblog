@@ -23,12 +23,12 @@ export function BlogLayout() {
   }, [location.pathname])
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col blog-background relative">
       {/* 头部导航 */}
       <BlogHeader />
       
       {/* 主要内容区域 */}
-      <main className="flex-1">
+      <main className="flex-1 relative z-10">
         <Outlet />
       </main>
       

@@ -173,7 +173,7 @@ export function BlogHome() {
 
   if (loading) {
     return (
-      <div className="bg-background">
+      <div>
         <main className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center min-h-96">
             <div className="text-center">
@@ -189,7 +189,7 @@ export function BlogHome() {
 
 
   return (
-    <div className="bg-background">
+    <div>
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* 主内容区域 */}
@@ -240,11 +240,6 @@ export function BlogHome() {
             {!currentCategory && !currentTag && featuredArticles.length > 0 && (
               <>
                 <section>
-                  <div className="flex items-center gap-2 mb-6">
-                    <h2 className="text-2xl font-bold">置顶</h2>
-                    <Badge variant="secondary">置顶</Badge>
-                  </div>
-                  
                   <div className="grid grid-cols-1 gap-4">
                     {featuredArticles.map((article) => (
                       <ArticleCard
@@ -277,7 +272,7 @@ export function BlogHome() {
               </div>
 
               {/* 文章列表 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 {(currentCategory || currentTag ? paginatedArticles : regularArticles.slice(0, 6)).map((article) => (
                   <ArticleCard
                     key={article.id}

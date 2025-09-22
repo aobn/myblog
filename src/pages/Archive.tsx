@@ -137,7 +137,7 @@ export default function Archive() {
 
   if (loading) {
     return (
-      <div className="bg-background">
+      <div>
         <main className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             <div className="text-center">
@@ -151,7 +151,7 @@ export default function Archive() {
   }
 
   return (
-    <div className="bg-background">
+    <div>
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* 页面标题 */}

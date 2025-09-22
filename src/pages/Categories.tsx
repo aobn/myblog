@@ -81,7 +81,7 @@ export default function Categories() {
 
   if (loading) {
     return (
-      <div className="bg-background">
+      <div>
         <main className="container mx-auto px-4 py-8">
           <div className="text-center">
             <div className="text-lg text-muted-foreground">加载分类中...</div>
@@ -92,7 +92,7 @@ export default function Categories() {
   }
 
   return (
-    <div className="bg-background">
+    <div>
       <main className="container mx-auto px-4 py-8">
         {/* 页面标题 */}
         <div className="text-center space-y-4 mb-12">

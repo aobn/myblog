@@ -91,7 +91,7 @@ export default function Tags() {
 
   if (loading) {
     return (
-      <div className="bg-background">
+      <div>
         <main className="container mx-auto px-4 py-8">
           <div className="text-center">
             <div className="text-lg text-muted-foreground">加载标签中...</div>
@@ -105,7 +105,7 @@ export default function Tags() {
   const sortedTags = [...tags].sort((a, b) => b.articleCount - a.articleCount)
 
   return (
-    <div className="bg-background">
+    <div>
       
       <main className="container mx-auto px-4 py-8">
         {/* 页面标题 */}

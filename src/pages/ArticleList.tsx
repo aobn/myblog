@@ -86,7 +86,7 @@ export function ArticleList() {
 
   if (loading) {
     return (
-      <div className="bg-background">
+      <div>
         <main className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center min-h-96">
             <div className="text-center">
@@ -116,7 +116,7 @@ export function ArticleList() {
   }
 
   return (
-    <div className="bg-background">
+    <div>
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* 主内容区域 */}

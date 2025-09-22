@@ -18,6 +18,7 @@ import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { BlogSidebar } from '@/components/blog/blog-sidebar'
 import { ArticleCard } from '@/components/blog/article-card'
+import { ArticleToc } from '@/components/blog/article-toc'
 import { getPostById, loadAllPosts } from '@/lib/simple-post-loader'
 import type { Article } from '@/types/blog'
 import { cn } from '@/lib/utils'
@@ -240,7 +241,7 @@ export function ArticleDetail() {
 
   if (loading) {
     return (
-      <div className="bg-background">
+      <div>
         <main className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center min-h-96">
             <div className="text-center">
@@ -255,7 +256,7 @@ export function ArticleDetail() {
 
   if (!article) {
     return (
-      <div className="bg-background">
+      <div>
         <main className="container mx-auto px-4 py-8">
           <div className="text-center py-12">
             <h1 className="text-2xl font-bold mb-4">文章未找到</h1>
@@ -303,7 +304,7 @@ export function ArticleDetail() {
   }
 
   return (
-    <div className="bg-background">
+    <div>
       
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -473,7 +474,11 @@ export function ArticleDetail() {
           </article>
 
           {/* 侧边栏 */}
-          <aside className="lg:col-span-1">
+          <aside className="lg:col-span-1 space-y-6">
+            {/* 文章目录 */}
+            <ArticleToc />
+            
+            {/* 其他侧边栏内容 */}
             <BlogSidebar />
           </aside>
         </div>

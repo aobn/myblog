@@ -12,7 +12,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 function App() {
   return (
     <ThemeProvider defaultTheme="system" storageKey="blog-ui-theme">
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen">
         <Outlet />
       </div>
     </ThemeProvider>
