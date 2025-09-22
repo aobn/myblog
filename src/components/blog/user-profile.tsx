@@ -6,7 +6,6 @@
  */
 
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Github, Calendar } from 'lucide-react'
 
 interface UserProfileProps {
@@ -16,18 +15,18 @@ interface UserProfileProps {
 export function UserProfile({ className }: UserProfileProps) {
   return (
     <Card className={className}>
-      <CardContent className="pt-6">
-        <div className="flex flex-col items-center text-center space-y-4">
+      <CardContent className="p-1">
+        <div className="flex flex-col items-center text-center space-y-1">
           {/* 头像 */}
           <div className="relative">
             <img
-              src="/avatar.svg"
+              src="/avatar.jpg"
               alt="xxh"
-              className="w-20 h-20 rounded-full object-cover border-2 border-border shadow-sm"
+              className="w-50 h-50 rounded-lg object-cover border-2 border-border shadow-sm"
               onError={(e) => {
                 // 如果头像加载失败，使用默认头像
                 const target = e.target as HTMLImageElement
-                target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80' fill='none'%3E%3Crect width='80' height='80' rx='40' fill='%23f3f4f6'/%3E%3Ccircle cx='40' cy='30' r='12' fill='%236b7280'/%3E%3Cpath d='M20 65c0-11 9-20 20-20s20 9 20 20' fill='%236b7280'/%3E%3C/svg%3E"
+                target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80' fill='none'%3E%3Crect width='80' height='80' rx='8' fill='%23f3f4f6'/%3E%3Ccircle cx='40' cy='30' r='12' fill='%236b7280'/%3E%3Cpath d='M20 65c0-11 9-20 20-20s20 9 20 20' fill='%236b7280'/%3E%3C/svg%3E"
               }}
             />
           </div>
