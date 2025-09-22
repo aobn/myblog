@@ -11,6 +11,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { Article } from '@/types/blog'
 import { cn } from '@/lib/utils'
+import { useMouseTransform } from '@/hooks/use-mouse-transform'
 
 interface ArticleCardProps {
   article: Article
@@ -31,6 +32,13 @@ const formatDate = (dateString: string) => {
 
 export function ArticleCard({ article, variant = 'default', className }: ArticleCardProps) {
   const navigate = useNavigate();
+  const mouseTransform = useMouseTransform<HTMLDivElement>({
+    scale: 1.02,
+    rotateX: 5,
+    rotateY: 5,
+    perspective: 1000
+  });
+  
   const cardVariants = {
     default: 'transition-all duration-300 bg-transparent',
     featured: 'border-primary/20 bg-transparent',
@@ -50,12 +58,16 @@ export function ArticleCard({ article, variant = 'default', className }: Article
 
   return (
     <Card 
+      ref={mouseTransform.ref}
       className={cn(
         cardVariants[variant], 
         className, 
-        'p-0 cursor-pointer relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-primary/50'
+        'p-0 cursor-pointer relative'
       )}
       onClick={handleCardClick}
+      onMouseMove={mouseTransform.onMouseMove}
+      onMouseEnter={mouseTransform.onMouseEnter}
+      onMouseLeave={mouseTransform.onMouseLeave}
     >
 
       {/* 响应式布局：大屏幕横向，小屏幕纵向 */}

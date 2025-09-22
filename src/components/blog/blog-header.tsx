@@ -72,7 +72,7 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo 和站点名称 */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2 jelly-light">
             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-sm">B</span>
             </div>
@@ -88,7 +88,7 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
                     <Link
                       to={item.href}
                       className={cn(
-                        "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-transform duration-200 hover:scale-110 active:scale-125 active:duration-100 focus:outline-none disabled:pointer-events-none disabled:opacity-50",
+                        "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium jelly-light focus:outline-none disabled:pointer-events-none disabled:opacity-50",
                         isActiveLink(item.href, item.exact) && "font-bold"
                       )}
                     >
@@ -141,7 +141,7 @@ export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps)
                     key={item.href}
                     to={item.href}
                     className={cn(
-                      "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-transform duration-200 hover:scale-110 active:scale-125 active:duration-100 focus:outline-none disabled:pointer-events-none disabled:opacity-50",
+                      "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium jelly-light focus:outline-none disabled:pointer-events-none disabled:opacity-50",
                       isActiveLink(item.href, item.exact) && "font-bold"
                     )}
                   >

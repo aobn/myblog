@@ -7,14 +7,28 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Github, Calendar } from 'lucide-react'
+import { useMouseTransform } from '@/hooks/use-mouse-transform'
 
 interface UserProfileProps {
   className?: string
 }
 
 export function UserProfile({ className }: UserProfileProps) {
+  const mouseTransform = useMouseTransform<HTMLDivElement>({
+    scale: 1.03,
+    rotateX: 8,
+    rotateY: 8,
+    perspective: 1000
+  });
+
   return (
-    <Card className={className}>
+    <Card 
+      ref={mouseTransform.ref}
+      className={className}
+      onMouseMove={mouseTransform.onMouseMove}
+      onMouseEnter={mouseTransform.onMouseEnter}
+      onMouseLeave={mouseTransform.onMouseLeave}
+    >
       <CardContent className="p-1">
         <div className="flex flex-col items-center text-center space-y-1">
           {/* 头像 */}
@@ -59,14 +73,14 @@ export function UserProfile({ className }: UserProfileProps) {
               href="https://github.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 rounded-md bg-secondary hover:bg-secondary/80 transition-colors"
+              className="p-2 rounded-md bg-secondary hover:bg-secondary/80 transition-colors jelly-light"
               title="GitHub"
             >
               <Github className="h-4 w-4" />
             </a>
             <a
               href="#"
-              className="p-2 rounded-md bg-secondary hover:bg-secondary/80 transition-colors"
+              className="p-2 rounded-md bg-secondary hover:bg-secondary/80 transition-colors jelly-light"
               title="日历"
             >
               <Calendar className="h-4 w-4" />
