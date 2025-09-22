@@ -1,7 +1,7 @@
 /**
  * 博客头部导航组件
  * 
- * @author CodeBuddy
+ * @author xxh
  * @date 2025-09-18
  */
 
@@ -31,6 +31,20 @@ const navigationItems = [
 export function BlogHeader({ siteName = 'My Blog', className }: BlogHeaderProps) {
   const location = useLocation()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
+
+  // 百度统计代码
+  React.useEffect(() => {
+    // 初始化百度统计
+    if (typeof window !== 'undefined') {
+      (window as any)._hmt = (window as any)._hmt || [];
+      (function() {
+        const hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?db576854c7d1f5a4decff72ed959872b";
+        const s = document.getElementsByTagName("script")[0]; 
+        s.parentNode?.insertBefore(hm, s);
+      })();
+    }
+  }, [])
 
   // 监听页面滚动，自动关闭移动端菜单
   React.useEffect(() => {
