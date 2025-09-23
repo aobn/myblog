@@ -55,7 +55,7 @@ export function ArticleDetail() {
   const [comment, setComment] = React.useState('')
   
   // 获取文章统计数据（包含本地存储）
-  const { displayStats, loading: statsLoading } = useArticleStatsStorage(article?.slug || article?.id || '')
+  const { displayStats } = useArticleStatsStorage(article?.slug || article?.id || '')
   
   // 获取URL参数
   const highlightQuery = searchParams.get('highlight')

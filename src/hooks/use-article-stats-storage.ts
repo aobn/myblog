@@ -8,7 +8,6 @@
 import { useState, useEffect } from 'react';
 import { useLocalStorage } from './use-local-storage';
 import { useArticleStats } from './use-baidu-analytics';
-import type { ArticleStats } from '@/lib/baidu-analytics';
 
 interface CachedArticleStats {
   pvCount: number;
